@@ -42,12 +42,10 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex space-x-2">
-          <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
-            <Link href="/signin">Log In</Link>
+          <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20">
+            Log In
           </Button>
-          <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          <Button className="bg-teal-500 text-black hover:bg-teal-400">Sign Up</Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -82,12 +80,10 @@ export function Navbar() {
               Companions
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start" asChild>
-                <Link href="/signin">Log In</Link>
+              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start">
+                Log In
               </Button>
-              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
+              <Button className="bg-teal-500 text-black hover:bg-teal-400">Sign Up</Button>
             </div>
           </div>
         </div>

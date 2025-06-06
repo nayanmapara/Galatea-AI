@@ -7,8 +7,18 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'blob.v0.dev',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
+  experimental: {
+    serverComponentsExternalPackages: ['uuid']
+  }
 }
 
 export default nextConfig
