@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Navbar } from "@/components/navbar"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { EyeIcon, EyeOffIcon, CheckCircleIcon } from "lucide-react"
 
 export default function SignUp() {
   const [name, setName] = useState("")
@@ -22,31 +22,56 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setSuccessMessage("")
 
     if (password !== confirmPassword) {
       setError("Passwords do not match")
       return
     }
 
+    if (!agreedToTerms) {
+      setError("Please agree to the Terms of Service and Privacy Policy")
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      // Here you would implement your actual registration logic
-      // For now, we'll just simulate a delay and redirect
+      // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Redirect to home page after successful registration
-      router.push("/")
+      // Show dummy success message with form data
+      setSuccessMessage(
+        `Account created successfully! Name: ${name}, Email: ${email}, Terms Agreed: ${agreedToTerms ? "Yes" : "No"}`,
+      )
+
+      // Clear form after 3 seconds and redirect
+      setTimeout(() => {
+        setSuccessMessage("")
+        router.push("/")
+      }, 3000)
     } catch (err) {
       setError("Failed to create account. Please try again.")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSocialSignUp = (provider: string) => {
+    setError("")
+    setSuccessMessage(`Dummy signed up with ${provider}`)
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      setSuccessMessage("")
+    }, 3000)
   }
 
   return (
@@ -71,6 +96,13 @@ export default function SignUp() {
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-md mb-6">{error}</div>
+          )}
+
+          {successMessage && (
+            <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-md mb-6 flex items-center gap-2">
+              <CheckCircleIcon size={20} />
+              <span>{successMessage}</span>
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -148,7 +180,13 @@ export default function SignUp() {
             </div>
 
             <div className="flex items-start space-x-2">
-              <Checkbox id="terms" className="border-gray-600 data-[state=checked]:bg-teal-500 mt-1" required />
+              <Checkbox
+                id="terms"
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                className="border-gray-600 data-[state=checked]:bg-teal-500 mt-1"
+                required
+              />
               <Label htmlFor="terms" className="text-sm text-gray-300">
                 I agree to the{" "}
                 <Link href="/terms" className="text-teal-400 hover:underline">
@@ -176,8 +214,10 @@ export default function SignUp() {
 
             <div className="grid grid-cols-2 gap-4">
               <Button
+                type="button"
                 variant="outline"
-                className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:animate-bounce transition-all duration-300"
+                onClick={() => handleSocialSignUp("Google")}
+                className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
@@ -200,8 +240,10 @@ export default function SignUp() {
                 Google
               </Button>
               <Button
+                type="button"
                 variant="outline"
-                className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:animate-bounce transition-all duration-300"
+                onClick={() => handleSocialSignUp("Facebook")}
+                className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300"
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
