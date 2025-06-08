@@ -43,10 +43,10 @@ export function Navbar() {
 
         <div className="hidden md:flex space-x-2">
           <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
-            <Link href="/signin">Log In</Link>
+            <Link href="/sign-in">Log In</Link>
           </Button>
           <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-            <Link href="/signup">Sign Up</Link>
+            <Link href="/sign-up">Sign Up</Link>
           </Button>
         </div>
 
@@ -82,11 +82,20 @@ export function Navbar() {
               Companions
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start" asChild>
-                <Link href="/signin">Log In</Link>
+              <Button
+                variant="ghost"
+                className="text-gray-300 hover:text-teal-400 justify-start"
+                asChild
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Link href="/sign-in">Log In</Link>
               </Button>
-              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link href="/signup">Sign Up</Link>
+              <Button
+                className="bg-teal-500 text-black hover:bg-teal-400"
+                asChild
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Link href="/sign-up">Sign Up</Link>
               </Button>
             </div>
           </div>

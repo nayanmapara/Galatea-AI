@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SparklesIcon, HeartIcon, ShieldCheckIcon } from "lucide-react"
@@ -7,8 +9,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Navbar } from "@/components/navbar"
-import { LoadingScreen } from "@/components/loading"
-import { FeatureCard } from "@/components/feature-card"
 
 type AIProfile = {
   uuid: string
@@ -21,31 +21,26 @@ type AIProfile = {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
-  const [loadingMessage, setLoadingMessage] = useState("Initializing...")
   const router = useRouter()
 
   const handleStartSwiping = async () => {
     setIsLoading(true)
-    setLoadingMessage("Initializing...")
-
-    // Simulate loading process
-    setTimeout(() => {
-      setLoadingMessage("Preparing your experience...")
-    }, 1000)
-
-    setTimeout(() => {
-      setLoadingMessage("Almost ready...")
-    }, 2000)
-
-    setTimeout(() => {
-      router.push("/signin")
-    }, 3000)
+    try {
+      const response = await fetch("/api/init-swiping")
+      if (!response.ok) {
+        throw new Error("Failed to initiate swiping")
+      }
+      const profiles: AIProfile[] = await response.json()
+      router.push(`/start-swiping?profiles=${encodeURIComponent(JSON.stringify(profiles))}`)
+    } catch (error) {
+      console.error("Error initiating swiping:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {isLoading && <LoadingScreen message={loadingMessage} />}
-
       <Navbar />
 
       <main>
@@ -53,7 +48,7 @@ export default function Home() {
         <section className="relative h-screen flex items-center">
           <div className="absolute inset-0 z-0">
             <Image
-              src="/hero.png"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nSvgtH9ngicN82eKEAn2KkfpbE2SCD.png"
               alt="AI Companion"
               fill
               style={{ objectFit: "cover", objectPosition: "center" }}
@@ -71,24 +66,14 @@ export default function Home() {
                 Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence. Create,
                 customize, and connect with your ideal AI partner.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  onClick={handleStartSwiping}
-                  disabled={isLoading}
-                  size="lg"
-                  className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
-                >
-                  {isLoading ? "Loading..." : "Start Swiping"}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-teal-500 text-teal-400 hover:bg-teal-500/10 text-lg px-8 py-6"
-                  asChild
-                >
-                  <Link href="/loading">View Loading Screen</Link>
-                </Button>
-              </div>
+              <Button
+                onClick={handleStartSwiping}
+                disabled={isLoading}
+                size="lg"
+                className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
+              >
+                {isLoading ? "Loading..." : "Start Swiping"}
+              </Button>
             </div>
           </div>
         </section>
@@ -212,7 +197,7 @@ export default function Home() {
             <div>
               <Link href="/" className="flex items-center space-x-2 mb-4">
                 <Image
-                  src="/favicon-white.png"
+                  src="/favicon.png"
                   alt="Galatea.AI Logo"
                   width={30}
                   height={30}
@@ -296,9 +281,19 @@ export default function Home() {
   )
 }
 
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 transition-transform hover:scale-105 hover:border-teal-500/30">
+      <div className="flex justify-center mb-6">{icon}</div>
+      <h3 className="text-2xl font-semibold text-white mb-4 text-center">{title}</h3>
+      <p className="text-gray-300 text-center">{description}</p>
+    </div>
+  )
+}
+
 function CompanionCard({ image, name, description }: { image: string; name: string; description: string }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:border-teal-500/30 group flex flex-col h-full">
+    <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:border-teal-500/30 group">
       <div className="relative h-80">
         <Image
           src={image || "/placeholder.svg"}
@@ -306,10 +301,11 @@ function CompanionCard({ image, name, description }: { image: string; name: stri
           fill
           style={{ objectFit: "cover", objectPosition: "top" }}
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
       </div>
-      <div className="p-6 flex flex-col flex-grow">
+      <div className="p-6">
         <h3 className="text-2xl font-semibold text-white mb-2">{name}</h3>
-        <p className="text-gray-300 flex-grow">{description}</p>
+        <p className="text-gray-300">{description}</p>
         <Button className="mt-4 w-full bg-transparent border border-teal-500 text-teal-400 hover:bg-teal-500/10 group-hover:bg-teal-500 group-hover:text-black transition-all duration-300">
           Meet {name}
         </Button>
