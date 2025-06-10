@@ -82,24 +82,22 @@ export default function Home() {
           </div>
 
           <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-3xl">
-              <h1 className="text-6xl md:text-8xl font-bold mb-8 text-center">
-                <span className="text-white">Friends</span> <span className="text-teal-400">Wanted</span>
+            <div className="max-w-2xl">
+              <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                Discover Your Ideal <span className="text-teal-400">AI Companion</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-10 text-center">
-                Build genuine confidence for real-world connections. Practice conversations, get personalized tips, and
-                level up your social game.
+              <p className="text-xl md:text-2xl text-gray-300 mb-10">
+                Galatea.AI connects you with sophisticated AI companions designed for meaningful conversations,
+                emotional support, and intellectual engagement.
               </p>
-              <div className="text-center">
-                <Button
-                  onClick={handleStartSwiping}
-                  disabled={isLoading}
-                  size="lg"
-                  className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
-                >
-                  {isLoading ? "Loading..." : "Start Building Confidence"}
-                </Button>
-              </div>
+              <Button
+                onClick={handleStartSwiping}
+                disabled={isLoading}
+                size="lg"
+                className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
+              >
+                {isLoading ? "Loading..." : "Start Swiping"}
+              </Button>
             </div>
           </div>
         </section>
