@@ -40,26 +40,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function signup(email: string, password: string, displayName: string) {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password)
-    await updateProfile(user, { displayName })
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(user, { displayName })
+      return user
+    } catch (error: any) {
+      console.error("Error in signup:", error)
+      throw new Error(error.message || "Failed to create account")
+    }
   }
 
-  function login(email: string, password: string) {
-    return signInWithEmailAndPassword(auth, email, password).then(() => {})
+  async function login(email: string, password: string) {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      return result.user
+    } catch (error: any) {
+      console.error("Error in login:", error)
+      throw new Error(error.message || "Failed to sign in")
+    }
   }
 
-  function logout() {
-    return signOut(auth)
+  async function logout() {
+    try {
+      await signOut(auth)
+    } catch (error: any) {
+      console.error("Error in logout:", error)
+      throw new Error(error.message || "Failed to sign out")
+    }
   }
 
   async function loginWithGoogle() {
-    const provider = new GoogleAuthProvider()
-    await signInWithPopup(auth, provider)
+    try {
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      return result.user
+    } catch (error: any) {
+      console.error("Error in Google login:", error)
+      throw new Error(error.message || "Failed to sign in with Google")
+    }
   }
 
   async function loginWithFacebook() {
-    const provider = new FacebookAuthProvider()
-    await signInWithPopup(auth, provider)
+    try {
+      const provider = new FacebookAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      return result.user
+    } catch (error: any) {
+      console.error("Error in Facebook login:", error)
+      throw new Error(error.message || "Failed to sign in with Facebook")
+    }
   }
 
   useEffect(() => {
@@ -81,5 +110,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loginWithFacebook,
   }
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
