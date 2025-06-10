@@ -20,13 +20,13 @@ type AIProfile = {
 }
 
 const heroMessages = [
-  "Your AI Wingman for Confidence and Real Connections",
-  "Helping You Talk to Humans (Without the Awkwardness)",
-  "Boost Your Confidence, One Chat at a Time",
-  "Because Approaching People Shouldn't Feel Like a Mission Impossible",
-  "Your Low-Key AI Buddy for Crushing Social Anxiety",
-  "Helping You Slide Into DMs and Life Like a Pro",
-  "The AI Sidekick That's Got Your Back (And Your Confidence)",
+  { first: "Your AI Wingman for", second: "Confidence and Real Connections" },
+  { first: "Helping You Talk to Humans", second: "(Without the Awkwardness)" },
+  { first: "Boost Your Confidence,", second: "One Chat at a Time" },
+  { first: "Because Approaching People Shouldn't Feel Like", second: "a Mission Impossible" },
+  { first: "Your Low-Key AI Buddy for", second: "Crushing Social Anxiety" },
+  { first: "Helping You Slide Into", second: "DMs and Life Like a Pro" },
+  { first: "The AI Sidekick That's Got Your Back", second: "(And Your Confidence)" },
 ]
 
 export default function Home() {
@@ -85,11 +85,12 @@ export default function Home() {
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-6xl font-bold mb-8 min-h-[200px] md:min-h-[240px] flex items-center">
                 <span
-                  className={`text-teal-400 transition-all duration-300 ${
+                  className={`transition-all duration-300 ${
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   }`}
                 >
-                  {heroMessages[currentMessageIndex]}
+                  <span className="text-white">{heroMessages[currentMessageIndex].first}</span>{" "}
+                  <span className="text-teal-400">{heroMessages[currentMessageIndex].second}</span>
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-10">
