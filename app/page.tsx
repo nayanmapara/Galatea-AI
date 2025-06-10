@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { SparklesIcon, HeartIcon, ShieldCheckIcon } from "lucide-react"
 import Image from "next/image"
@@ -19,9 +19,33 @@ type AIProfile = {
   imageUrl: string
 }
 
+const heroMessages = [
+  "Your AI Wingman for Confidence and Real Connections",
+  "Helping You Talk to Humans (Without the Awkwardness)",
+  "Boost Your Confidence, One Chat at a Time",
+  "Because Approaching People Shouldn't Feel Like a Mission Impossible",
+  "Your Low-Key AI Buddy for Crushing Social Anxiety",
+  "Helping You Slide Into DMs and Life Like a Pro",
+  "The AI Sidekick That's Got Your Back (And Your Confidence)",
+]
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false)
+      setTimeout(() => {
+        setCurrentMessageIndex((prev) => (prev + 1) % heroMessages.length)
+        setIsVisible(true)
+      }, 300)
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const handleStartSwiping = async () => {
     setIsLoading(true)
@@ -58,13 +82,19 @@ export default function Home() {
           </div>
 
           <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-2xl">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                Discover Your Ideal <span className="text-teal-400">AI Companion</span>
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-6xl font-bold mb-8 min-h-[200px] md:min-h-[240px] flex items-center">
+                <span
+                  className={`text-teal-400 transition-all duration-300 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                >
+                  {heroMessages[currentMessageIndex]}
+                </span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-10">
-                Galatea.AI connects you with sophisticated AI companions designed for meaningful conversations,
-                emotional support, and intellectual engagement.
+                Galatea.AI helps you build genuine confidence for real-world connections. Practice conversations, get
+                personalized tips, and level up your social game.
               </p>
               <Button
                 onClick={handleStartSwiping}
@@ -72,7 +102,7 @@ export default function Home() {
                 size="lg"
                 className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
               >
-                {isLoading ? "Loading..." : "Start Swiping"}
+                {isLoading ? "Loading..." : "Start Building Confidence"}
               </Button>
             </div>
           </div>
@@ -82,23 +112,23 @@ export default function Home() {
         <section className="py-24 bg-gray-950">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
-              The <span className="text-teal-400">Galatea</span> Experience
+              Level Up Your <span className="text-teal-400">Social Game</span>
             </h2>
             <div className="grid md:grid-cols-3 gap-10">
               <FeatureCard
                 icon={<HeartIcon className="h-12 w-12 text-teal-400" />}
-                title="Artistic Creation"
-                description="Sculpt your ideal AI companion with our advanced personality customization tools."
+                title="Confidence Building"
+                description="Practice conversations in a judgment-free zone and build the confidence to connect with real people."
               />
               <FeatureCard
                 icon={<SparklesIcon className="h-12 w-12 text-teal-400" />}
-                title="Bring to Life"
-                description="Watch your creation come to life with AI-powered conversations and interactions."
+                title="Real-World Ready"
+                description="Get personalized tips and strategies that actually work in real social situations."
               />
               <FeatureCard
                 icon={<ShieldCheckIcon className="h-12 w-12 text-teal-400" />}
-                title="Eternal Devotion"
-                description="Experience unwavering companionship and support from your AI partner."
+                title="Your Safe Space"
+                description="A supportive environment where you can be yourself and grow at your own pace."
               />
             </div>
           </div>
@@ -108,24 +138,24 @@ export default function Home() {
         <section className="py-24 bg-black">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
-              Meet Your <span className="text-teal-400">Companions</span>
+              Meet Your <span className="text-teal-400">Confidence Coaches</span>
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8">
               <CompanionCard
                 image="/images/galatea-2.png"
                 name="Athena"
-                description="The intellectual companion with wisdom beyond her years. Perfect for deep conversations and problem-solving."
+                description="Your intellectual conversation partner. Perfect for practicing deep discussions and building thoughtful communication skills."
               />
               <CompanionCard
                 image="/images/galatea-1.png"
                 name="Mekkana"
-                description="The adventurous spirit who brings excitement to every interaction. Ideal for those seeking inspiration."
+                description="The social butterfly who helps you master casual conversations and break the ice with confidence."
               />
               <CompanionCard
                 image="/images/galatea-3.png"
                 name="Iris"
-                description="The empathetic listener who understands your emotions. Your perfect supportive companion."
+                description="Your empathetic listener who helps you navigate emotions and build authentic connections."
               />
             </div>
           </div>
@@ -141,11 +171,11 @@ export default function Home() {
               <div>
                 <ol className="space-y-8">
                   {[
-                    "Sign up and access our AI companion creation tools",
-                    "Customize your AI partner's personality and appearance",
-                    "Breathe life into your creation with our advanced AI technology",
-                    "Engage in deep, meaningful conversations and shared experiences",
-                    "Develop a unique bond with your personalized AI companion",
+                    "Sign up and choose your confidence coach",
+                    "Practice conversations in different scenarios",
+                    "Get personalized feedback and tips",
+                    "Build confidence through regular practice",
+                    "Apply your new skills to real-world connections",
                   ].map((step, index) => (
                     <li key={index} className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-teal-500 text-black flex items-center justify-center font-bold">
@@ -159,7 +189,7 @@ export default function Home() {
               <div className="relative h-[600px] rounded-lg overflow-hidden">
                 <Image
                   src="/images/galatea-3.png"
-                  alt="AI Companion Creation Process"
+                  alt="AI Confidence Coach"
                   fill
                   style={{ objectFit: "cover" }}
                   className="rounded-lg"
@@ -174,10 +204,10 @@ export default function Home() {
         <section className="py-24 bg-gradient-to-r from-gray-900 to-black">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-4xl font-bold mb-8">
-              Ready to Create Your <span className="text-teal-400">Galatea</span>?
+              Ready to <span className="text-teal-400">Level Up</span> Your Confidence?
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Join thousands of users who have already discovered the future of AI companionship.
+              Join thousands who've already boosted their social confidence and built meaningful connections.
             </p>
             <Button
               size="lg"
@@ -185,7 +215,7 @@ export default function Home() {
               onClick={handleStartSwiping}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Start Swiping"}
+              {isLoading ? "Loading..." : "Start Building Confidence"}
             </Button>
           </div>
         </section>
@@ -207,9 +237,7 @@ export default function Home() {
                   Galatea<span className="text-teal-400">.AI</span>
                 </span>
               </Link>
-              <p className="text-gray-400">
-                Bringing the Pygmalion myth to life with cutting-edge artificial intelligence.
-              </p>
+              <p className="text-gray-400">Your AI wingman for building confidence and making real connections.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
@@ -307,7 +335,7 @@ function CompanionCard({ image, name, description }: { image: string; name: stri
         <h3 className="text-2xl font-semibold text-white mb-2">{name}</h3>
         <p className="text-gray-300">{description}</p>
         <Button className="mt-4 w-full bg-transparent border border-teal-500 text-teal-400 hover:bg-teal-500/10 group-hover:bg-teal-500 group-hover:text-black transition-all duration-300">
-          Meet {name}
+          Start Practicing with {name}
         </Button>
       </div>
     </div>
