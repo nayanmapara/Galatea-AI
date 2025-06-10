@@ -1,27 +1,34 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type React from "react"
+import type { Metadata } from "next"
+import "./globals.css"
+import { Inter } from "next/font/google"
+import { AuthProvider } from "@/contexts/auth-context" // Import AuthProvider
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Galatea.AI - Your Perfect AI Companion",
-  description: "Create, customize, and connect with your ideal AI partner.",
+  title: "Galatea.AI",
+  description: "Your AI Companion Platform",
   generator: "v0.dev",
   icons: {
-    icon: "/favicon-white.png",
-    shortcut: "/favicon-white.png",
-    apple: "/favicon-white.png",
+    icon: "/favicon.png",
   },
-};
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} bg-black text-white`}>
+        <AuthProvider>
+          {" "}
+          {/* Wrap with AuthProvider */}
+          {children}
+        </AuthProvider>
+      </body>
     </html>
-  );
+  )
 }
