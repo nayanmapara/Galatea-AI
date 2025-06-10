@@ -60,11 +60,11 @@ export default function Home() {
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-2xl">
               <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                Sculpt Your Perfect <span className="text-teal-400">AI Companion</span>
+                Discover Your Ideal <span className="text-teal-400">AI Companion</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-10">
-                Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence. Create,
-                customize, and connect with your ideal AI partner.
+                Galatea.AI connects you with sophisticated AI companions designed for meaningful conversations,
+                emotional support, and intellectual engagement.
               </p>
               <Button
                 onClick={handleStartSwiping}
