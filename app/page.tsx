@@ -83,7 +83,32 @@ export default function Home() {
 
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-6xl font-bold mb-8 min-h-[200px] md:min-h-[240px] flex items-center">
+              <h1 className="text-6xl md:text-8xl font-bold mb-8 text-center">
+                <span className="text-white">Friends</span> <span className="text-teal-400">Wanted</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-10 text-center">
+                Build genuine confidence for real-world connections. Practice conversations, get personalized tips, and
+                level up your social game.
+              </p>
+              <div className="text-center">
+                <Button
+                  onClick={handleStartSwiping}
+                  disabled={isLoading}
+                  size="lg"
+                  className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
+                >
+                  {isLoading ? "Loading..." : "Start Building Confidence"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Dynamic Message Section */}
+        <section className="py-24 bg-gray-950">
+          <div className="container mx-auto px-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 min-h-[120px] md:min-h-[160px] flex items-center justify-center">
                 <span
                   className={`transition-all duration-300 ${
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -92,25 +117,16 @@ export default function Home() {
                   <span className="text-white">{heroMessages[currentMessageIndex].first}</span>{" "}
                   <span className="text-teal-400">{heroMessages[currentMessageIndex].second}</span>
                 </span>
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-10">
-                Galatea.AI helps you build genuine confidence for real-world connections. Practice conversations, get
-                personalized tips, and level up your social game.
+              </h2>
+              <p className="text-xl text-gray-300 mb-10">
+                Galatea.AI helps you overcome social anxiety and build the confidence you need to make real friends.
               </p>
-              <Button
-                onClick={handleStartSwiping}
-                disabled={isLoading}
-                size="lg"
-                className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
-              >
-                {isLoading ? "Loading..." : "Start Building Confidence"}
-              </Button>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section className="py-24 bg-gray-950">
+        <section className="py-24 bg-black">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
               Level Up Your <span className="text-teal-400">Social Game</span>
@@ -136,7 +152,7 @@ export default function Home() {
         </section>
 
         {/* Showcase Section */}
-        <section className="py-24 bg-black">
+        <section className="py-24 bg-gray-950">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
               Meet Your <span className="text-teal-400">Confidence Coaches</span>
@@ -163,7 +179,7 @@ export default function Home() {
         </section>
 
         {/* Process Section */}
-        <section className="py-24 bg-gray-950">
+        <section className="py-24 bg-black">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
               How It <span className="text-teal-400">Works</span>
@@ -205,10 +221,10 @@ export default function Home() {
         <section className="py-24 bg-gradient-to-r from-gray-900 to-black">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-4xl font-bold mb-8">
-              Ready to <span className="text-teal-400">Level Up</span> Your Confidence?
+              Ready to <span className="text-teal-400">Make Friends</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Join thousands who've already boosted their social confidence and built meaningful connections.
+              Join thousands who've already boosted their social confidence and built meaningful friendships.
             </p>
             <Button
               size="lg"
@@ -238,7 +254,7 @@ export default function Home() {
                   Galatea<span className="text-teal-400">.AI</span>
                 </span>
               </Link>
-              <p className="text-gray-400">Your AI wingman for building confidence and making real connections.</p>
+              <p className="text-gray-400">Your AI wingman for building confidence and making real friends.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
