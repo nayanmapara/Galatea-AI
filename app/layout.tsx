@@ -1,19 +1,18 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
-import { AuthProvider } from "@/contexts/auth-context"
+import { Inter } from "next/font/google"
+import { AuthProvider } from "@/contexts/auth-context" // Import AuthProvider
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Galatea.AI - Sculpt Your Perfect AI Companion",
-  description: "Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence.",
+  title: "Galatea.AI",
+  description: "Your AI Companion Platform",
+  generator: "v0.dev",
   icons: {
     icon: "/favicon.png",
-    apple: "/favicon.png",
   },
-  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -22,9 +21,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} bg-black text-white`}>
+        <AuthProvider>
+          {" "}
+          {/* Wrap with AuthProvider */}
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
