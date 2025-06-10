@@ -48,7 +48,7 @@ export default function Home() {
         <section className="relative h-screen flex items-center">
           <div className="absolute inset-0 z-0">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nSvgtH9ngicN82eKEAn2KkfpbE2SCD.png"
+              src="/hero.png"
               alt="AI Companion"
               fill
               style={{ objectFit: "cover", objectPosition: "center" }}

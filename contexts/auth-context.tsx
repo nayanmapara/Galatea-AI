@@ -18,11 +18,11 @@ import { auth } from "@/lib/firebase"
 interface AuthContextType {
   currentUser: User | null
   loading: boolean
-  signup: (email: string, password: string, displayName: string) => Promise<void>
-  login: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string, displayName: string) => Promise<User>
+  login: (email: string, password: string) => Promise<User>
   logout: () => Promise<void>
-  loginWithGoogle: () => Promise<void>
-  loginWithFacebook: () => Promise<void>
+  loginWithGoogle: () => Promise<User>
+  loginWithFacebook: () => Promise<User>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
