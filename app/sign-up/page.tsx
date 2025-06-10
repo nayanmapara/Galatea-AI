@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Navbar } from "@/components/navbar"
 import { EyeIcon, EyeOffIcon, CheckCircleIcon } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function SignUp() {
   const [name, setName] = useState("")
@@ -25,6 +26,7 @@ export default function SignUp() {
   const [successMessage, setSuccessMessage] = useState("")
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const router = useRouter()
+  const { signup, loginWithGoogle, loginWithFacebook } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,37 +43,44 @@ export default function SignUp() {
       return
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await signup(email, password, name)
+      setSuccessMessage("Account created successfully! Redirecting...")
 
-      // Show dummy success message with form data
-      setSuccessMessage(
-        `Account created successfully! Name: ${name}, Email: ${email}, Terms Agreed: ${agreedToTerms ? "Yes" : "No"}`,
-      )
-
-      // Clear form after 3 seconds and redirect
       setTimeout(() => {
-        setSuccessMessage("")
         router.push("/")
-      }, 3000)
-    } catch (err) {
-      setError("Failed to create account. Please try again.")
+      }, 2000)
+    } catch (err: any) {
+      setError(err.message || "Failed to create account. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleSocialSignUp = (provider: string) => {
+  const handleSocialSignUp = async (provider: "google" | "facebook") => {
     setError("")
-    setSuccessMessage(`Dummy signed up with ${provider}`)
+    setSuccessMessage("")
 
-    // Clear message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage("")
-    }, 3000)
+    try {
+      if (provider === "google") {
+        await loginWithGoogle()
+      } else {
+        await loginWithFacebook()
+      }
+      setSuccessMessage("Account created successfully! Redirecting...")
+      setTimeout(() => {
+        router.push("/")
+      }, 2000)
+    } catch (err: any) {
+      setError(err.message || `Failed to sign up with ${provider}`)
+    }
   }
 
   return (
@@ -152,9 +161,7 @@ export default function SignUp() {
                   {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
                 </button>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Password must be at least 8 characters long with a number and a special character
-              </p>
+              <p className="text-xs text-gray-400 mt-1">Password must be at least 6 characters long</p>
             </div>
 
             <div className="space-y-2">
@@ -216,7 +223,7 @@ export default function SignUp() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialSignUp("Google")}
+                onClick={() => handleSocialSignUp("google")}
                 className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -242,7 +249,7 @@ export default function SignUp() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialSignUp("Facebook")}
+                onClick={() => handleSocialSignUp("facebook")}
                 className="border-gray-800 bg-black/30 hover:border-white hover:bg-black/50 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300"
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
