@@ -12,7 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/contexts/auth-context"
 import { uploadProfilePicture, deleteProfilePicture } from "@/lib/storage"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 import { CheckCircleIcon, UserIcon, Camera, Trash2, Upload } from "lucide-react"
 
 export default function Profile() {
@@ -35,6 +35,7 @@ export default function Profile() {
 
     try {
       // Update user metadata in Supabase
+      const supabase = createClient()
       const { error } = await supabase.auth.updateUser({
         data: { display_name: displayName }
       })
@@ -129,9 +130,9 @@ export default function Profile() {
               {/* Profile Picture Section */}
               <div className="relative mx-auto h-32 w-32 mb-6">
                 <div className="relative h-full w-full rounded-full overflow-hidden bg-gray-900 border-4 border-gray-800">
-                  {currentUser?.photoURL ? (
+                  {currentUser?.user_metadata?.avatar_url ? (
                     <Image
-                      src={currentUser.photoURL || "/placeholder.svg"}
+                      src={currentUser.user_metadata.avatar_url || "/placeholder.svg"}
                       alt="Profile"
                       fill
                       className="object-cover"
@@ -161,7 +162,7 @@ export default function Profile() {
                 </button>
 
                 {/* Delete button (only show if user has a photo) */}
-                {currentUser?.photoURL && (
+                {currentUser?.user_metadata?.avatar_url && (
                   <button
                     onClick={handleDeleteImage}
                     disabled={isUploadingImage}

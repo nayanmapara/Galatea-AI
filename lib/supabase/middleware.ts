@@ -1,13 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { getPublicSupabaseConfig, hasEnvVars } from "./config";
+import { getPublicSupabaseConfig, hasSupabaseEnv } from "./config";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
-  if (!hasEnvVars) {
+  if (!hasSupabaseEnv()) {
     return supabaseResponse;
   }
 

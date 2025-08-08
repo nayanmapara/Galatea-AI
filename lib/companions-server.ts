@@ -1,4 +1,4 @@
-import { createClient as createClientClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 
 export interface Companion {
   id: string;
@@ -12,12 +12,9 @@ export interface Companion {
   created_at: string;
 }
 
-// Type alias for compatibility
-export type AICompanion = Companion;
-
-// Client-side functions only (to avoid server import issues)
-export async function getCompanionsClient(): Promise<Companion[]> {
-  const supabase = createClientClient();
+// Server-side functions
+export async function getAllCompanions(): Promise<Companion[]> {
+  const supabase = await createClient();
   
   const { data, error } = await supabase
     .from('companions')
@@ -31,8 +28,8 @@ export async function getCompanionsClient(): Promise<Companion[]> {
   return data || [];
 }
 
-export async function createCompanionClient(companion: Omit<Companion, 'id' | 'created_at'>): Promise<Companion> {
-  const supabase = createClientClient();
+export async function createCompanion(companion: Omit<Companion, 'id' | 'created_at'>): Promise<Companion> {
+  const supabase = await createClient();
   
   const { data, error } = await supabase
     .from('companions')
@@ -47,8 +44,8 @@ export async function createCompanionClient(companion: Omit<Companion, 'id' | 'c
   return data;
 }
 
-export async function updateCompanionClient(id: string, updates: Partial<Companion>): Promise<Companion> {
-  const supabase = createClientClient();
+export async function updateCompanion(id: string, updates: Partial<Companion>): Promise<Companion> {
+  const supabase = await createClient();
   
   const { data, error } = await supabase
     .from('companions')
@@ -64,8 +61,8 @@ export async function updateCompanionClient(id: string, updates: Partial<Compani
   return data;
 }
 
-export async function deleteCompanionClient(id: string): Promise<void> {
-  const supabase = createClientClient();
+export async function deleteCompanion(id: string): Promise<void> {
+  const supabase = await createClient();
   
   const { error } = await supabase
     .from('companions')
@@ -76,5 +73,3 @@ export async function deleteCompanionClient(id: string): Promise<void> {
     throw new Error(`Failed to delete companion: ${error.message}`);
   }
 }
-
-export const getAllCompanionsClient = getCompanionsClient;

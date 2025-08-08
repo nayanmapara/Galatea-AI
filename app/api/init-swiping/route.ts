@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAllCompanions } from "@/lib/companions"
+import { getAllCompanions } from "@/lib/companions-server"
 
 export async function GET() {
   try {

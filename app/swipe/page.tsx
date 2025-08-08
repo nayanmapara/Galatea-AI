@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { SwipeCard } from "@/components/swipe-card"
 import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
-import { getAllCompanions, type AICompanion } from "@/lib/companions"
+import { getAllCompanionsClient as getAllCompanions, type AICompanion } from "@/lib/companions"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
