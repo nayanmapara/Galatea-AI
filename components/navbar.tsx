@@ -46,14 +46,18 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-teal-400 transition-colors">
-            Dashboard
-          </Link>
+          {currentUser && (
+            <>
+              <Link href="/dashboard" className="text-gray-300 hover:text-teal-400 transition-colors">
+                Dashboard
+              </Link>
+              <Link href="/profile" className="text-gray-300 hover:text-teal-400 transition-colors">
+                Profile
+              </Link>
+            </>
+          )}
           <Link href="/start-swiping" className="text-gray-300 hover:text-teal-400 transition-colors">
             Discover
-          </Link>
-          <Link href="/profile" className="text-gray-300 hover:text-teal-400 transition-colors">
-            Profile
           </Link>
         </div>
 
@@ -124,26 +128,30 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-black/90 backdrop-blur-md">
           <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
-            <Link
-              href="/dashboard"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Dashboard
-            </Link>
+            {currentUser && (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-gray-300 hover:text-teal-400 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/profile"
+                  className="text-gray-300 hover:text-teal-400 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+              </>
+            )}
             <Link
               href="/start-swiping"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Discover
-            </Link>
-            <Link
-              href="/profile"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Profile
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
               {!mounted ? (
