@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuth } from "@/contexts/simple-auth-context"
 import { Users, MessageCircle, Heart, TrendingUp } from "lucide-react"
 
 export default function Dashboard() {

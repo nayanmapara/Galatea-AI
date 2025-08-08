@@ -19,12 +19,12 @@ export function createClient(config?: PublicConfig) {
     | PublicConfig
     | undefined;
 
-  const url = config?.url ?? injected?.url;
-  const anonKey = config?.anonKey ?? injected?.anonKey;
+  const url = config?.url ?? injected?.url ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = config?.anonKey ?? injected?.anonKey ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
     throw new Error(
-      "Supabase browser client is missing config. Ensure <SupabaseConfigScript /> is mounted in app/layout.tsx or pass { url, anonKey } to createClient()."
+      "Supabase browser client is missing config. Please ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in your environment variables, or <SupabaseConfigScript /> is mounted in app/layout.tsx."
     );
   }
 

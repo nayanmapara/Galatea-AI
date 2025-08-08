@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createSimpleClient } from '@/lib/supabase/simple-client'
 import type { User } from '@supabase/supabase-js'
 
 interface AuthContextType {
@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
 })
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function SimpleAuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -26,13 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // Only start auth operations after component is mounted
     if (!mounted) return
 
     let supabase: any = null;
     
     try {
-      supabase = createClient()
+      supabase = createSimpleClient()
     } catch (error) {
       console.error("Failed to create Supabase client:", error)
       setLoading(false)
@@ -66,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      const supabase = createClient()
+      const supabase = createSimpleClient()
       await supabase.auth.signOut()
       setCurrentUser(null)
     } catch (error) {
@@ -84,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth must be used within a SimpleAuthProvider')
   }
   return context
 }

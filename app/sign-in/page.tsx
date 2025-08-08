@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
-import { createClient } from "@/lib/supabase/client"
+import { createSimpleClient as createClient } from "@/lib/supabase/simple-client"
 
 function SignInContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -24,15 +24,13 @@ function SignInContent() {
     setError("")
     setSuccessMessage("")
     setIsLoading(true)
+    
     try {
       const supabase = createClient()
 
-      const redirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/auth/callback`
-          : undefined
+      const redirectTo = `${window.location.origin}/auth/callback`
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "discord",
         options: {
           redirectTo,
@@ -40,13 +38,17 @@ function SignInContent() {
         },
       })
 
-      if (error) throw error
-
-      // Supabase will redirect automatically; follow provided URL explicitly if present.
-      if (data?.url) {
-        window.location.href = data.url
+      if (error) {
+        console.error("Discord OAuth error:", error)
+        throw error
       }
+
+      // The user will be redirected to Discord, then back to the callback
+      // The callback will handle the session exchange and redirect to dashboard
+      console.log("Redirecting to Discord OAuth...")
+      
     } catch (e: any) {
+      console.error("Login error:", e)
       setError(e?.message || "Failed to sign in with Discord")
       setIsLoading(false)
     }

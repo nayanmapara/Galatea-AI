@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuth } from "@/contexts/simple-auth-context"
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, loading } = useAuth()

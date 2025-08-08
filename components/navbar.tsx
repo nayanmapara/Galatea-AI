@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { Menu, X, LogOut, User, Settings, BarChart3 } from 'lucide-react'
-import { useAuth } from "@/contexts/auth-context"
+import { Menu, X, LogOut, User, Settings } from 'lucide-react'
+import { useAuth } from "@/contexts/simple-auth-context"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)

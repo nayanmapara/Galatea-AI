@@ -3,12 +3,12 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import SupabaseConfigScript from "@/components/supabase-config";
-import { Suspense } from 'react';
+import { SimpleAuthProvider } from "@/contexts/simple-auth-context";
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Galatea.AI - Your AI Wingman',
+  description: 'Connect with sophisticated AI companions for meaningful conversations, emotional support, and confidence building.',
+  generator: 'Galatea.AI',
 }
 
 export default function RootLayout({
@@ -19,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <SupabaseConfigScript />
         <style>{`
 html {
   font-family: ${GeistSans.style.fontFamily};
@@ -28,8 +29,9 @@ html {
         `}</style>
       </head>
       <body>
-        <SupabaseConfigScript />
-        {children}
+        <SimpleAuthProvider>
+          {children}
+        </SimpleAuthProvider>
       </body>
     </html>
   )
