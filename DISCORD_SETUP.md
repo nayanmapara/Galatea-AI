@@ -51,7 +51,7 @@
 ## Environment Variables
 
 Your `.env.local` is already configured with:
-- ✅ `NEXT_PUBLIC_SUPABASE_URL`
+- ✅ `NEXT_PUBLIC_SITE_URL`
 - ✅ `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY`
 - ✅ `SUPABASE_SERVICE_ROLE_KEY`
 - ✅ `NEXT_PUBLIC_SITE_URL`
