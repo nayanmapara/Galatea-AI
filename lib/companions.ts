@@ -72,3 +72,5 @@ export async function deleteCompanion(id: string): Promise<void> {
     throw new Error(`Failed to delete companion: ${error.message}`);
   }
 }
+
+export const getAllCompanions = getCompanions;

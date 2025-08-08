@@ -1,21 +1,33 @@
+'use client';
+
 import { createBrowserClient } from "@supabase/ssr";
 
 /**
- * Creates a browser Supabase client using public env vars.
- * Never use the service role key in the browser.
+ * Browser Supabase client that does not read environment variables.
+ * It consumes config injected by the server (window.__SUPABASE) or
+ * accepts config via parameter. This avoids bundling env vars into client code.
  */
-export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SITE_URL;
-  // Support either NEXT_PUBLIC_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY
-  const anon =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY;
+type PublicConfig = { url: string; anonKey: string };
+type BrowserClient = ReturnType<typeof createBrowserClient>;
 
-  if (!url || !anon) {
+let singleton: BrowserClient | null = null;
+
+export function createClient(config?: PublicConfig) {
+  if (singleton) return singleton;
+
+  const injected = (globalThis as any).__SUPABASE as
+    | PublicConfig
+    | undefined;
+
+  const url = config?.url ?? injected?.url;
+  const anonKey = config?.anonKey ?? injected?.anonKey;
+
+  if (!url || !anonKey) {
     throw new Error(
-      "Missing Supabase env: set NEXT_PUBLIC_SITE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY)."
+      "Supabase browser client is missing config. Ensure <SupabaseConfigScript /> is mounted in app/layout.tsx or pass { url, anonKey } to createClient()."
     );
   }
 
-  return createBrowserClient(url, anon);
+  singleton = createBrowserClient(url, anonKey);
+  return singleton;
 }
