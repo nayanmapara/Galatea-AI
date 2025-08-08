@@ -4,13 +4,18 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { Menu, X, LogOut, User } from 'lucide-react'
+import { Menu, X, LogOut, User, Settings, BarChart3 } from 'lucide-react'
 import { useAuth } from "@/contexts/auth-context"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { currentUser, logout } = useAuth()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,31 +46,65 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/about" className="text-gray-300 hover:text-teal-400 transition-colors">
-            About
+          <Link href="/dashboard" className="text-gray-300 hover:text-teal-400 transition-colors">
+            Dashboard
           </Link>
-          <Link href="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-colors">
+          <Link href="/start-swiping" className="text-gray-300 hover:text-teal-400 transition-colors">
+            Discover
+          </Link>
+          <Link href="/profile" className="text-gray-300 hover:text-teal-400 transition-colors">
             Profile
-          </Link>
-          <Link href="/companions" className="text-gray-300 hover:text-teal-400 transition-colors">
-            Companions
           </Link>
         </div>
 
-        <div className="hidden md:flex space-x-2 items-center">
-          {currentUser ? (
+        <div className="hidden md:flex space-x-4 items-center">
+          {!mounted ? (
+            // Show loading state during hydration
+            <div className="w-24 h-8 bg-gray-700 rounded animate-pulse"></div>
+          ) : currentUser ? (
             <>
-              <div className="flex items-center space-x-2 text-gray-300">
-                <User size={18} />
-                <span className="text-sm">{currentUser.user_metadata?.full_name || currentUser.email}</span>
-              </div>
+              {/* Profile Section - Clickable */}
+              <Link href="/dashboard" className="flex items-center space-x-3 text-gray-300 hover:text-teal-400 transition-colors group">
+                {/* Profile Picture */}
+                {currentUser.user_metadata?.avatar_url ? (
+                  <img
+                    src={currentUser.user_metadata.avatar_url}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full border-2 border-teal-500 group-hover:border-teal-400 transition-colors"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-teal-500 group-hover:bg-teal-400 transition-colors flex items-center justify-center">
+                    <User size={18} className="text-black" />
+                  </div>
+                )}
+                {/* Username */}
+                <span className="text-sm font-medium">
+                  {currentUser.user_metadata?.full_name || 
+                   currentUser.user_metadata?.name || 
+                   currentUser.user_metadata?.preferred_username ||
+                   currentUser.email?.split('@')[0]}
+                </span>
+              </Link>
+              
+              {/* Quick Action Buttons */}
               <Button
+                asChild
                 variant="ghost"
-                onClick={handleLogout}
+                size="sm"
                 className="text-gray-300 hover:text-teal-400 hover:bg-black/20"
               >
-                <LogOut size={18} className="mr-2" />
-                Log Out
+                <Link href="/profile">
+                  <Settings size={18} />
+                </Link>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-300 hover:text-red-400 hover:bg-black/20"
+              >
+                <LogOut size={18} />
               </Button>
             </>
           ) : (
@@ -86,32 +125,52 @@ export function Navbar() {
         <div className="md:hidden bg-black/90 backdrop-blur-md">
           <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             <Link
-              href="/about"
+              href="/dashboard"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              About
+              Dashboard
             </Link>
             <Link
-              href="/profile-setup"
+              href="/start-swiping"
+              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Discover
+            </Link>
+            <Link
+              href="/profile"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Profile
             </Link>
-            <Link
-              href="/companions"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Companions
-            </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              {currentUser ? (
+              {!mounted ? (
+                // Show loading state during hydration
+                <div className="w-32 h-8 bg-gray-700 rounded animate-pulse"></div>
+              ) : currentUser ? (
                 <>
-                  <div className="flex items-center space-x-2 text-gray-300 py-2">
-                    <User size={18} />
-                    <span className="text-sm">{currentUser.user_metadata?.full_name || currentUser.email}</span>
+                  <div className="flex items-center space-x-3 text-gray-300 py-2">
+                    {/* Profile Picture */}
+                    {currentUser.user_metadata?.avatar_url ? (
+                      <img
+                        src={currentUser.user_metadata.avatar_url}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full border-2 border-teal-500"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center">
+                        <User size={18} className="text-black" />
+                      </div>
+                    )}
+                    {/* Username */}
+                    <span className="text-sm font-medium">
+                      {currentUser.user_metadata?.full_name || 
+                       currentUser.user_metadata?.name || 
+                       currentUser.user_metadata?.preferred_username ||
+                       currentUser.email?.split('@')[0]}
+                    </span>
                   </div>
                   <Button
                     variant="ghost"
