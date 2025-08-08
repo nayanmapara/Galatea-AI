@@ -2,18 +2,8 @@
 
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
-import {
-  type User,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import type { User } from "@supabase/supabase-js"
+import { supabase } from "@/lib/supabase"
 
 interface AuthContextType {
   currentUser: User | null
@@ -41,9 +31,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signup(email: string, password: string, displayName: string) {
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password)
-      await updateProfile(user, { displayName })
-      return user
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName,
+          },
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.user) {
+        throw new Error("No user returned from signup")
+      }
+
+      return data.user
     } catch (error: any) {
       console.error("Error in signup:", error)
       throw new Error(error.message || "Failed to create account")
@@ -52,8 +58,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function login(email: string, password: string) {
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password)
-      return result.user
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.user) {
+        throw new Error("No user returned from login")
+      }
+
+      return data.user
     } catch (error: any) {
       console.error("Error in login:", error)
       throw new Error(error.message || "Failed to sign in")
@@ -62,7 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function logout() {
     try {
-      await signOut(auth)
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        throw error
+      }
     } catch (error: any) {
       console.error("Error in logout:", error)
       throw new Error(error.message || "Failed to sign out")
@@ -71,9 +92,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function loginWithGoogle() {
     try {
-      const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      return result.user
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.user) {
+        throw new Error("No user returned from Google login")
+      }
+
+      return data.user
     } catch (error: any) {
       console.error("Error in Google login:", error)
       throw new Error(error.message || "Failed to sign in with Google")
@@ -82,9 +116,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function loginWithFacebook() {
     try {
-      const provider = new FacebookAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      return result.user
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.user) {
+        throw new Error("No user returned from Facebook login")
+      }
+
+      return data.user
     } catch (error: any) {
       console.error("Error in Facebook login:", error)
       throw new Error(error.message || "Failed to sign in with Facebook")
@@ -92,12 +139,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      setCurrentUser(session?.user ?? null)
       setLoading(false)
     })
 
-    return unsubscribe
+    return () => subscription.unsubscribe()
   }, [])
 
   const value: AuthContextType = {

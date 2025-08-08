@@ -11,15 +11,15 @@ import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/contexts/auth-context"
-import { updateProfile } from "firebase/auth"
 import { uploadProfilePicture, deleteProfilePicture } from "@/lib/storage"
+import { supabase } from "@/lib/supabase"
 import { CheckCircleIcon, UserIcon, Camera, Trash2, Upload } from "lucide-react"
 
 export default function Profile() {
   const { currentUser, logout } = useAuth()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [displayName, setDisplayName] = useState(currentUser?.displayName || "")
+  const [displayName, setDisplayName] = useState(currentUser?.user_metadata?.display_name || "")
   const [isLoading, setIsLoading] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
@@ -34,9 +34,15 @@ export default function Profile() {
     setSuccessMessage("")
 
     try {
-      await updateProfile(currentUser, {
-        displayName: displayName,
+      // Update user metadata in Supabase
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: displayName }
       })
+
+      if (error) {
+        throw error
+      }
+
       setSuccessMessage("Profile updated successfully!")
       setTimeout(() => setSuccessMessage(""), 3000)
     } catch (err: any) {
@@ -67,7 +73,7 @@ export default function Profile() {
     setSuccessMessage("")
 
     try {
-      await uploadProfilePicture(currentUser, file)
+      await uploadProfilePicture(currentUser.id, file)
       setSuccessMessage("Profile picture updated successfully!")
       setTimeout(() => setSuccessMessage(""), 3000)
     } catch (err: any) {
@@ -89,7 +95,7 @@ export default function Profile() {
     setSuccessMessage("")
 
     try {
-      await deleteProfilePicture(currentUser)
+      await deleteProfilePicture(currentUser.id)
       setSuccessMessage("Profile picture removed successfully!")
       setTimeout(() => setSuccessMessage(""), 3000)
     } catch (err: any) {

@@ -1,50 +1,59 @@
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
-import { storage } from "./firebase"
-import { updateProfile } from "firebase/auth"
-import type { User } from "firebase/auth"
+import { supabase } from "./supabase"
 
-export async function uploadProfilePicture(user: User, file: File): Promise<string> {
+export async function uploadProfilePicture(userId: string, file: File): Promise<string> {
   try {
-    // Create a reference to the file location
+    // Create a unique file name
     const fileExtension = file.name.split(".").pop()
-    const fileName = `profile-pictures/${user.uid}.${fileExtension}`
-    const storageRef = ref(storage, fileName)
+    const fileName = `profile-pictures/${userId}.${fileExtension}`
 
-    // Upload the file
-    const snapshot = await uploadBytes(storageRef, file)
+    // Upload the file to Supabase Storage
+    const { error } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, file, {
+        upsert: true // Replace existing file if it exists
+      })
 
-    // Get the download URL
-    const downloadURL = await getDownloadURL(snapshot.ref)
+    if (error) {
+      throw error
+    }
 
-    // Update the user's profile with the new photo URL
-    await updateProfile(user, {
-      photoURL: downloadURL,
-    })
+    // Get the public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(fileName)
 
-    return downloadURL
+    return publicUrl
   } catch (error) {
     console.error("Error uploading profile picture:", error)
     throw new Error("Failed to upload profile picture")
   }
 }
 
-export async function deleteProfilePicture(user: User): Promise<void> {
+export async function deleteProfilePicture(userId: string): Promise<void> {
   try {
-    if (user.photoURL) {
-      // Extract the file path from the URL
-      const url = new URL(user.photoURL)
-      const pathMatch = url.pathname.match(/\/o\/(.+)\?/)
-      if (pathMatch) {
-        const filePath = decodeURIComponent(pathMatch[1])
-        const storageRef = ref(storage, filePath)
-        await deleteObject(storageRef)
-      }
+    // Delete the profile picture from Supabase Storage
+    // List all files with this prefix to handle different extensions
+    const { data: files, error: listError } = await supabase.storage
+      .from('avatars')
+      .list('profile-pictures', {
+        search: userId
+      })
+
+    if (listError) {
+      throw listError
     }
 
-    // Update the user's profile to remove the photo URL
-    await updateProfile(user, {
-      photoURL: null,
-    })
+    // Delete all matching files
+    if (files && files.length > 0) {
+      const filesToDelete = files.map((file: any) => `profile-pictures/${file.name}`)
+      const { error: deleteError } = await supabase.storage
+        .from('avatars')
+        .remove(filesToDelete)
+
+      if (deleteError) {
+        throw deleteError
+      }
+    }
   } catch (error) {
     console.error("Error deleting profile picture:", error)
     throw new Error("Failed to delete profile picture")

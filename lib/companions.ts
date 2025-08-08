@@ -1,5 +1,4 @@
-import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, orderBy } from "firebase/firestore"
-import { db } from "./firebase"
+import { supabase } from "./supabase"
 
 export interface AICompanion {
   id?: string
@@ -22,15 +21,19 @@ export interface AICompanion {
 
 export async function getAllCompanions(): Promise<AICompanion[]> {
   try {
-    const companionsRef = collection(db, "companions")
-    const q = query(companionsRef, orderBy("createdAt", "desc"))
-    const querySnapshot = await getDocs(q)
+    const { data, error } = await supabase
+      .from('companions')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate(),
-      updatedAt: doc.data().updatedAt?.toDate(),
+    if (error) {
+      throw error
+    }
+
+    return data.map((companion: any) => ({
+      ...companion,
+      createdAt: companion.created_at ? new Date(companion.created_at) : undefined,
+      updatedAt: companion.updated_at ? new Date(companion.updated_at) : undefined,
     })) as AICompanion[]
   } catch (error) {
     console.error("Error fetching companions:", error)
@@ -40,19 +43,24 @@ export async function getAllCompanions(): Promise<AICompanion[]> {
 
 export async function getCompanionById(id: string): Promise<AICompanion | null> {
   try {
-    const docRef = doc(db, "companions", id)
-    const docSnap = await getDoc(docRef)
+    const { data, error } = await supabase
+      .from('companions')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    if (docSnap.exists()) {
-      return {
-        id: docSnap.id,
-        ...docSnap.data(),
-        createdAt: docSnap.data().createdAt?.toDate(),
-        updatedAt: docSnap.data().updatedAt?.toDate(),
-      } as AICompanion
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null // No rows found
+      }
+      throw error
     }
 
-    return null
+    return {
+      ...data,
+      createdAt: data.created_at ? new Date(data.created_at) : undefined,
+      updatedAt: data.updated_at ? new Date(data.updated_at) : undefined,
+    } as AICompanion
   } catch (error) {
     console.error("Error fetching companion:", error)
     throw new Error("Failed to fetch companion")
@@ -61,14 +69,21 @@ export async function getCompanionById(id: string): Promise<AICompanion | null> 
 
 export async function createCompanion(companion: Omit<AICompanion, "id" | "createdAt" | "updatedAt">): Promise<string> {
   try {
-    const companionsRef = collection(db, "companions")
-    const docRef = await addDoc(companionsRef, {
-      ...companion,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    const { data, error } = await supabase
+      .from('companions')
+      .insert([{
+        ...companion,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }])
+      .select('id')
+      .single()
 
-    return docRef.id
+    if (error) {
+      throw error
+    }
+
+    return data.id
   } catch (error) {
     console.error("Error creating companion:", error)
     throw new Error("Failed to create companion")
@@ -77,11 +92,17 @@ export async function createCompanion(companion: Omit<AICompanion, "id" | "creat
 
 export async function updateCompanion(id: string, updates: Partial<AICompanion>): Promise<void> {
   try {
-    const docRef = doc(db, "companions", id)
-    await updateDoc(docRef, {
-      ...updates,
-      updatedAt: new Date(),
-    })
+    const { error } = await supabase
+      .from('companions')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
   } catch (error) {
     console.error("Error updating companion:", error)
     throw new Error("Failed to update companion")
@@ -90,8 +111,14 @@ export async function updateCompanion(id: string, updates: Partial<AICompanion>)
 
 export async function deleteCompanion(id: string): Promise<void> {
   try {
-    const docRef = doc(db, "companions", id)
-    await deleteDoc(docRef)
+    const { error } = await supabase
+      .from('companions')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
   } catch (error) {
     console.error("Error deleting companion:", error)
     throw new Error("Failed to delete companion")
