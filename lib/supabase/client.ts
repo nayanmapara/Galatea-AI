@@ -1,8 +1,21 @@
 import { createBrowserClient } from "@supabase/ssr";
 
+/**
+ * Creates a browser Supabase client using public env vars.
+ * Never use the service role key in the browser.
+ */
 export function createClient() {
-  return createBrowserClient(
-    "https://auerjtqqvftxndshuhpn.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1ZXJqdHFxdmZ0eG5kc2h1aHBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2MTA0NzYsImV4cCI6MjA3MDE4NjQ3Nn0.5yGoZMbKUXHLausdqIohDBlTN3sFMlu3tIPFAtg0ets"
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  // Support either NEXT_PUBLIC_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY
+  const anon =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY;
+
+  if (!url || !anon) {
+    throw new Error(
+      "Missing Supabase env: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY)."
+    );
+  }
+
+  return createBrowserClient(url, anon);
 }
