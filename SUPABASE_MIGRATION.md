@@ -1,6 +1,6 @@
-# Firebase to Supabase Migration
+# Firebase to Supabase Migration with Discord Authentication
 
-This document outlines the migration from Firebase to Supabase that has been completed for the Galatea AI project.
+This document outlines the migration from Firebase to Supabase that has been completed for the Galatea AI project, with server-side authentication and Discord as the primary OAuth provider.
 
 ## Changes Made
 
@@ -13,14 +13,13 @@ This document outlines the migration from Firebase to Supabase that has been com
   - `updateDoc()` → `supabase.from().update()`
   - `deleteDoc()` → `supabase.from().delete()`
 
-### 2. Authentication Migration
-- **Firebase Auth** → **Supabase Auth**
-- Updated `contexts/auth-context.tsx`:
-  - `createUserWithEmailAndPassword()` → `supabase.auth.signUp()`
-  - `signInWithEmailAndPassword()` → `supabase.auth.signInWithPassword()`
-  - `signOut()` → `supabase.auth.signOut()`
-  - `signInWithPopup()` → `supabase.auth.signInWithOAuth()`
-  - `onAuthStateChanged()` → `supabase.auth.onAuthStateChange()`
+### 2. Authentication Migration - Server-Side
+- **Firebase Auth** → **Supabase Auth with Server Actions**
+- Created `lib/auth-actions.ts` with server-side authentication functions
+- Created `lib/supabase-server.ts` for server-side Supabase client
+- Added `middleware.ts` for route protection
+- Updated `contexts/auth-context.tsx` for client-side state (kept for compatibility)
+- **Discord** is now the primary authentication method
 
 ### 3. Storage Migration
 - **Firebase Storage** → **Supabase Storage**
@@ -34,10 +33,18 @@ This document outlines the migration from Firebase to Supabase that has been com
   - Added Supabase user metadata updates via `supabase.auth.updateUser()`
   - Updated storage function calls to use user ID instead of User object
 
-### 5. Configuration Files
+### 5. Authentication Pages
+- Updated `app/sign-in/page.tsx` and `app/sign-up/page.tsx`:
+  - Discord as primary authentication method
+  - Email/password as secondary option
+  - Server actions for authentication
+  - Error handling via URL parameters
+
+### 6. Configuration Files
 - Renamed `lib/firebase.ts` → `lib/supabase.ts`
 - Updated all import statements to use new Supabase client
 - Added OAuth callback route at `app/auth/callback/page.tsx`
+- Added middleware for route protection
 
 ## Required Setup
 
@@ -45,7 +52,20 @@ This document outlines the migration from Firebase to Supabase that has been com
 1. Create a new Supabase project at [supabase.com](https://supabase.com)
 2. Note down your project URL and anon key
 
-### 2. Database Schema
+### 2. Discord OAuth Setup
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Create a new application or use existing one
+3. Go to OAuth2 section
+4. Add redirect URL: `https://your-project-ref.supabase.co/auth/v1/callback`
+5. Note down Client ID and Client Secret
+
+### 3. Supabase Discord Configuration
+1. In Supabase dashboard, go to Authentication → Providers
+2. Enable Discord provider
+3. Enter your Discord Client ID and Client Secret
+4. Set redirect URL to: `http://localhost:3000/auth/callback` (for development)
+
+### 4. Database Schema
 Create the following table in your Supabase database:
 
 \`\`\`sql
@@ -89,26 +109,19 @@ CREATE POLICY "Authenticated users can delete companions" ON companions
   FOR DELETE USING (auth.role() = 'authenticated');
 \`\`\`
 
-### 3. Storage Setup
+### 5. Storage Setup
 1. In Supabase dashboard, go to Storage
 2. Create a new bucket called `avatars`
 3. Set the bucket to public if you want profile pictures to be publicly accessible
 4. Configure appropriate policies for the bucket
 
-### 4. Authentication Setup
+### 6. Authentication Setup
 1. In Supabase dashboard, go to Authentication → Settings
 2. Configure Site URL: `http://localhost:3000` (for development)
 3. Add redirect URLs: `http://localhost:3000/auth/callback`
+4. Configure Discord provider as described above
 
-### 5. OAuth Providers (Optional)
-If you want to enable Google/Facebook login:
-1. In Supabase dashboard, go to Authentication → Providers
-2. Enable and configure Google OAuth:
-   - Add your Google Client ID and Secret
-3. Enable and configure Facebook OAuth:
-   - Add your Facebook App ID and Secret
-
-### 6. Environment Variables
+### 7. Environment Variables
 Update your `.env.local` file with the Supabase credentials:
 
 \`\`\`bash
@@ -117,47 +130,70 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
+# Discord OAuth Configuration (configure in Supabase dashboard)
+# DISCORD_CLIENT_ID=your_discord_client_id_here
+# DISCORD_CLIENT_SECRET=your_discord_client_secret_here
+
 # OAuth Configuration (optional - configure in Supabase dashboard)
 # NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id_here
 # NEXT_PUBLIC_FACEBOOK_APP_ID=your_facebook_app_id_here
 \`\`\`
 
-## Data Migration
+## Server-Side Authentication Features
 
-To populate your Supabase database with companion data:
+### Auth Actions (`lib/auth-actions.ts`)
+- `signInWithDiscord()` - Primary authentication method
+- `signInWithEmail()` - Email/password authentication
+- `signUpWithEmail()` - Email registration
+- `signOut()` - Sign out functionality
+- `getUser()` - Get current user server-side
 
-1. Uncomment the last line in `scripts/populate-companions.ts`
-2. Run the script: `npm run dev` and navigate to trigger the script, or run it directly
+### Route Protection (`middleware.ts`)
+- Automatic redirect for unauthenticated users on protected routes
+- Prevents authenticated users from accessing auth pages
+- Handles cookies and session management
 
-## Key Differences
+### Protected Routes
+- `/profile` - User profile management
+- `/start-swiping` - Main application
+- `/swipe` - Swiping functionality
+
+## Discord Authentication Flow
+
+1. User clicks "Continue with Discord" button
+2. `signInWithDiscord()` server action is called
+3. User is redirected to Discord OAuth
+4. Discord redirects back to `/auth/callback`
+5. Callback page processes the authentication
+6. User is redirected to `/start-swiping` on success
+
+## Key Differences from Firebase
 
 ### User Object Structure
 - **Firebase**: `user.uid`, `user.displayName`, `user.email`
 - **Supabase**: `user.id`, `user.user_metadata.display_name`, `user.email`
 
-### Database Queries
-- **Firebase**: Document-based with subcollections
-- **Supabase**: SQL-based with PostgreSQL features
+### Authentication Flow
+- **Firebase**: Client-side authentication with Firebase SDK
+- **Supabase**: Server-side authentication with Next.js Server Actions
 
-### Real-time Updates
-- **Firebase**: `onSnapshot()`
-- **Supabase**: `supabase.from().on().subscribe()`
-
-### File Uploads
-- **Firebase**: Hierarchical paths with `ref()`
-- **Supabase**: Bucket-based with `from(bucket)`
+### Session Management
+- **Firebase**: Client-side session management
+- **Supabase**: Server-side session management with cookies
 
 ## Testing
 
 After setup:
-1. Test user registration and login
-2. Test profile picture upload/delete
-3. Test companion data fetching
-4. Test OAuth providers (if configured)
+1. Test Discord authentication flow
+2. Test email registration and login
+3. Test route protection middleware
+4. Test profile picture upload/delete
+5. Test companion data fetching
 
 ## Notes
 
 - All Firebase packages can be removed from package.json
-- The migration maintains the same API structure for components
-- User sessions are handled automatically by Supabase
-- OAuth redirects now go through `/auth/callback`
+- The migration uses server-side authentication for better security
+- User sessions are handled automatically by Supabase with cookies
+- Discord OAuth is configured as the primary authentication method
+- Email authentication is still available as a fallback option
