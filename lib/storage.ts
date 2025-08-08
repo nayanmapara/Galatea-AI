@@ -1,61 +1,88 @@
-import { supabase } from "./supabase"
+import { createClient } from "./supabase/server"
 
-export async function uploadProfilePicture(userId: string, file: File): Promise<string> {
-  try {
-    // Create a unique file name
-    const fileExtension = file.name.split(".").pop()
-    const fileName = `profile-pictures/${userId}.${fileExtension}`
+// Upload profile picture to Supabase Storage
+export async function uploadProfilePicture(file: File, userId: string): Promise<string> {
+  const supabase = await createClient()
+  
+  // Create a unique filename
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${userId}_${Date.now()}.${fileExt}`
+  const filePath = `profile-pictures/${fileName}`
 
-    // Upload the file to Supabase Storage
-    const { error } = await supabase.storage
-      .from('avatars')
-      .upload(fileName, file, {
-        upsert: true // Replace existing file if it exists
-      })
+  // Upload file to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('user-uploads')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true
+    })
 
-    if (error) {
-      throw error
-    }
+  if (error) {
+    console.error('Upload error:', error)
+    throw new Error('Failed to upload profile picture')
+  }
 
-    // Get the public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(fileName)
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from('user-uploads')
+    .getPublicUrl(data.path)
 
-    return publicUrl
-  } catch (error) {
-    console.error("Error uploading profile picture:", error)
-    throw new Error("Failed to upload profile picture")
+  return urlData.publicUrl
+}
+
+// Delete profile picture from Supabase Storage
+export async function deleteProfilePicture(filePath: string): Promise<void> {
+  const supabase = await createClient()
+  
+  // Extract the path from the URL if it's a full URL
+  const path = filePath.includes('/storage/v1/object/public/') 
+    ? filePath.split('/storage/v1/object/public/user-uploads/')[1]
+    : filePath
+
+  const { error } = await supabase.storage
+    .from('user-uploads')
+    .remove([path])
+
+  if (error) {
+    console.error('Delete error:', error)
+    throw new Error('Failed to delete profile picture')
   }
 }
 
-export async function deleteProfilePicture(userId: string): Promise<void> {
-  try {
-    // Delete the profile picture from Supabase Storage
-    // List all files with this prefix to handle different extensions
-    const { data: files, error: listError } = await supabase.storage
-      .from('avatars')
-      .list('profile-pictures', {
-        search: userId
-      })
+// Upload companion image
+export async function uploadCompanionImage(file: File, companionId: string): Promise<string> {
+  const supabase = await createClient()
+  
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${companionId}_${Date.now()}.${fileExt}`
+  const filePath = `companion-images/${fileName}`
 
-    if (listError) {
-      throw listError
-    }
+  const { data, error } = await supabase.storage
+    .from('user-uploads')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true
+    })
 
-    // Delete all matching files
-    if (files && files.length > 0) {
-      const filesToDelete = files.map((file: any) => `profile-pictures/${file.name}`)
-      const { error: deleteError } = await supabase.storage
-        .from('avatars')
-        .remove(filesToDelete)
-
-      if (deleteError) {
-        throw deleteError
-      }
-    }
-  } catch (error) {
-    console.error("Error deleting profile picture:", error)
-    throw new Error("Failed to delete profile picture")
+  if (error) {
+    console.error('Upload error:', error)
+    throw new Error('Failed to upload companion image')
   }
+
+  const { data: urlData } = supabase.storage
+    .from('user-uploads')
+    .getPublicUrl(data.path)
+
+  return urlData.publicUrl
+}
+
+// Get file from storage
+export async function getFileUrl(filePath: string): Promise<string> {
+  const supabase = await createClient()
+  
+  const { data } = supabase.storage
+    .from('user-uploads')
+    .getPublicUrl(filePath)
+
+  return data.publicUrl
 }
