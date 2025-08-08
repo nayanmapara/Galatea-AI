@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { Menu, X, LogOut, User } from "lucide-react"
+import { Menu, X, LogOut, User } from 'lucide-react'
 import { useAuth } from "@/contexts/auth-context"
 
 export function Navbar() {
@@ -57,7 +57,7 @@ export function Navbar() {
             <>
               <div className="flex items-center space-x-2 text-gray-300">
                 <User size={18} />
-                <span className="text-sm">{currentUser.displayName || currentUser.email}</span>
+                <span className="text-sm">{currentUser.user_metadata?.full_name || currentUser.email}</span>
               </div>
               <Button
                 variant="ghost"
@@ -69,14 +69,9 @@ export function Navbar() {
               </Button>
             </>
           ) : (
-            <>
-              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
-                <Link href="/sign-in">Log In</Link>
-              </Button>
-              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </>
+            <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+              <Link href="/sign-in">Login</Link>
+            </Button>
           )}
         </div>
 
@@ -116,7 +111,7 @@ export function Navbar() {
                 <>
                   <div className="flex items-center space-x-2 text-gray-300 py-2">
                     <User size={18} />
-                    <span className="text-sm">{currentUser.displayName || currentUser.email}</span>
+                    <span className="text-sm">{currentUser.user_metadata?.full_name || currentUser.email}</span>
                   </div>
                   <Button
                     variant="ghost"
@@ -131,23 +126,13 @@ export function Navbar() {
                   </Button>
                 </>
               ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="text-gray-300 hover:text-teal-400 justify-start"
-                    asChild
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Link href="/sign-in">Log In</Link>
-                  </Button>
-                  <Button
-                    className="bg-teal-500 text-black hover:bg-teal-400"
-                    asChild
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Link href="/sign-up">Sign Up</Link>
-                  </Button>
-                </>
+                <Button
+                  className="bg-teal-500 text-black hover:bg-teal-400"
+                  asChild
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link href="/sign-in">Login</Link>
+                </Button>
               )}
             </div>
           </div>

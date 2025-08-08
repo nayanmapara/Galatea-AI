@@ -1,88 +1,35 @@
-import { createClient } from "./supabase/server"
+import { createClient } from "@/lib/supabase/client";
 
-// Upload profile picture to Supabase Storage
-export async function uploadProfilePicture(file: File, userId: string): Promise<string> {
-  const supabase = await createClient()
+export async function uploadImage(file: File, path: string): Promise<string> {
+  const supabase = createClient();
   
-  // Create a unique filename
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${userId}_${Date.now()}.${fileExt}`
-  const filePath = `profile-pictures/${fileName}`
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `${path}/${fileName}`;
 
-  // Upload file to Supabase Storage
   const { data, error } = await supabase.storage
-    .from('user-uploads')
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: true
-    })
+    .from('images')
+    .upload(filePath, file);
 
   if (error) {
-    console.error('Upload error:', error)
-    throw new Error('Failed to upload profile picture')
+    throw new Error(`Failed to upload image: ${error.message}`);
   }
 
-  // Get public URL
-  const { data: urlData } = supabase.storage
-    .from('user-uploads')
-    .getPublicUrl(data.path)
+  const { data: { publicUrl } } = supabase.storage
+    .from('images')
+    .getPublicUrl(filePath);
 
-  return urlData.publicUrl
+  return publicUrl;
 }
 
-// Delete profile picture from Supabase Storage
-export async function deleteProfilePicture(filePath: string): Promise<void> {
-  const supabase = await createClient()
+export async function deleteImage(path: string): Promise<void> {
+  const supabase = createClient();
   
-  // Extract the path from the URL if it's a full URL
-  const path = filePath.includes('/storage/v1/object/public/') 
-    ? filePath.split('/storage/v1/object/public/user-uploads/')[1]
-    : filePath
-
   const { error } = await supabase.storage
-    .from('user-uploads')
-    .remove([path])
+    .from('images')
+    .remove([path]);
 
   if (error) {
-    console.error('Delete error:', error)
-    throw new Error('Failed to delete profile picture')
+    throw new Error(`Failed to delete image: ${error.message}`);
   }
-}
-
-// Upload companion image
-export async function uploadCompanionImage(file: File, companionId: string): Promise<string> {
-  const supabase = await createClient()
-  
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${companionId}_${Date.now()}.${fileExt}`
-  const filePath = `companion-images/${fileName}`
-
-  const { data, error } = await supabase.storage
-    .from('user-uploads')
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: true
-    })
-
-  if (error) {
-    console.error('Upload error:', error)
-    throw new Error('Failed to upload companion image')
-  }
-
-  const { data: urlData } = supabase.storage
-    .from('user-uploads')
-    .getPublicUrl(data.path)
-
-  return urlData.publicUrl
-}
-
-// Get file from storage
-export async function getFileUrl(filePath: string): Promise<string> {
-  const supabase = await createClient()
-  
-  const { data } = supabase.storage
-    .from('user-uploads')
-    .getPublicUrl(filePath)
-
-  return data.publicUrl
 }

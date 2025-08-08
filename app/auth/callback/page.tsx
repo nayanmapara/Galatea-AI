@@ -1,46 +1,26 @@
-"use client"
+import { createClient } from '@/lib/supabase/server'
+import { NextRequest } from 'next/server'
+import { redirect } from 'next/navigation'
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+export default async function AuthCallback({
+  searchParams,
+}: {
+  searchParams: { code?: string; error?: string }
+}) {
+  const supabase = await createClient()
 
-export default function AuthCallback() {
-  const router = useRouter()
+  if (searchParams.error) {
+    redirect('/sign-in?error=' + encodeURIComponent(searchParams.error))
+  }
 
-  useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession()
-        
-        if (error) {
-          console.error("Error getting session:", error)
-          router.push("/sign-in?error=auth_callback_error")
-          return
-        }
-
-        if (data.session) {
-          // User is authenticated, redirect to dashboard or intended page
-          router.push("/start-swiping")
-        } else {
-          // No session found, redirect to sign in
-          router.push("/sign-in")
-        }
-      } catch (error) {
-        console.error("Auth callback error:", error)
-        router.push("/sign-in?error=auth_callback_error")
-      }
+  if (searchParams.code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(searchParams.code)
+    
+    if (error) {
+      redirect('/sign-in?error=' + encodeURIComponent(error.message))
     }
+  }
 
-    handleAuthCallback()
-  }, [router])
-
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
-        <p className="text-lg">Completing authentication...</p>
-        <p className="text-sm text-gray-400 mt-2">Please wait while we log you in</p>
-      </div>
-    </div>
-  )
+  // Successful authentication, redirect to profile or dashboard
+  redirect('/profile')
 }

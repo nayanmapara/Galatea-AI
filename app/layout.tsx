@@ -1,33 +1,38 @@
-import type React from "react"
 import type { Metadata } from "next"
+import { Inter } from 'next/font/google'
 import "./globals.css"
-import { Inter } from "next/font/google"
-import { AuthProvider } from "@/contexts/auth-context" // Import AuthProvider
+import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/contexts/auth-context"
+import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Galatea.AI",
-  description: "Your AI Companion Platform",
-  generator: "v0.dev",
-  icons: {
-    icon: "/favicon.png",
-  },
+  title: "Galatea.AI - Your AI Companion",
+  description: "Find your perfect AI companion with Galatea.AI",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-black text-white`}>
-        <AuthProvider>
-          {" "}
-          {/* Wrap with AuthProvider */}
-          {children}
-        </AuthProvider>
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              {children}
+            </Suspense>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
