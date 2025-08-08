@@ -33,3 +33,43 @@ export async function deleteImage(path: string): Promise<void> {
     throw new Error(`Failed to delete image: ${error.message}`);
   }
 }
+
+export async function uploadProfilePicture(userId: string, file: File): Promise<string> {
+  // Store under images/profiles/{userId}/random.ext
+  // Uses the existing uploadImage helper which targets the 'images' bucket.
+  return uploadImage(file, `profiles/${userId}`);
+}
+
+/**
+ * Accepts either a storage path like "profiles/{userId}/file.png"
+ * or a public URL like
+ * https://{project}.supabase.co/storage/v1/object/public/images/profiles/{userId}/file.png
+ * and deletes the file from the 'images' bucket.
+ */
+export async function deleteProfilePicture(storagePathOrPublicUrl: string): Promise<void> {
+  // Try to normalize a public URL into a path within the 'images' bucket
+  const normalizeToBucketPath = (input: string): string => {
+    // If a full URL was provided, convert to pathname
+    let path = input;
+    try {
+      const url = new URL(input);
+      path = url.pathname;
+    } catch {
+      // not a URL; keep as-is
+    }
+
+    // Look for the public images prefix
+    const publicPrefix = "/storage/v1/object/public/images/";
+    const idx = path.indexOf(publicPrefix);
+    if (idx !== -1) {
+      return path.substring(idx + publicPrefix.length);
+    }
+
+    // If the path already starts with "images/", strip it so deleteImage()
+    // doesn't end up with "images/images/..."
+    return path.replace(/^images\//, "");
+  };
+
+  const bucketPath = normalizeToBucketPath(storagePathOrPublicUrl);
+  await deleteImage(bucketPath);
+}
