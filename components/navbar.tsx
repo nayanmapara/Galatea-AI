@@ -119,7 +119,7 @@ export function Navbar() {
             ) : (
               <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
                 <Link href="/auth">Login</Link>
-                  <Link href="/sign-in">Sign In</Link>
+              </Button>
             )
           )}
         </div>
@@ -210,7 +210,7 @@ export function Navbar() {
                 </Button>
               )}
             </div>
-                  <Link href="/sign-in">Sign In</Link>
+          </div>
         </div>
       )}
     </header>
