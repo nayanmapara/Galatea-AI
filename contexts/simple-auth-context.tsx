@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { createSimpleClient } from '@/lib/supabase/simple-client'
+import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
 interface AuthContextType {
@@ -31,7 +31,7 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     let supabase: any = null;
     
     try {
-      supabase = createSimpleClient()
+      supabase = createClient()
     } catch (error) {
       console.error("Failed to create Supabase client:", error)
       setLoading(false)
@@ -65,7 +65,7 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
 
   const logout = async () => {
     try {
-      const supabase = createSimpleClient()
+      const supabase = createClient()
       await supabase.auth.signOut()
       setCurrentUser(null)
     } catch (error) {

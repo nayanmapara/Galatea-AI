@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
-import { createSimpleClient as createClient } from "@/lib/supabase/simple-client"
+import { createClient } from "@/lib/supabase/client"
 
 export default function SignUp() {
   const [email, setEmail] = useState("");

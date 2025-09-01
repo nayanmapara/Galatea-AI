@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
-import { createSimpleClient as createClient } from "@/lib/supabase/simple-client"
+import { createClient } from "@/lib/supabase/client"
 
 function SignInContent() {
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
