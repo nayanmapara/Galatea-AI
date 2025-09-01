@@ -78,3 +78,6 @@ export async function deleteCompanionClient(id: string): Promise<void> {
 }
 
 export const getAllCompanionsClient = getCompanionsClient;
+
+// ---- Compatibility export for companion fetch ----
+export const getAllCompanions = getCompanionsClient;

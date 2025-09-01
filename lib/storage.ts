@@ -73,3 +73,21 @@ export async function deleteProfilePicture(storagePathOrPublicUrl: string): Prom
   const bucketPath = normalizeToBucketPath(storagePathOrPublicUrl);
   await deleteImage(bucketPath);
 }
+
+// ---- Compatibility exports for profile pictures ----
+
+/**
+ * Upload a user's profile picture to Supabase Storage and return the public URL.
+ * Stores under: images/profiles/{userId}/random.ext
+ */
+export async function uploadProfilePicture(userId: string, file: File): Promise<string> {
+  return uploadImage(file, `profiles/${userId}`);
+}
+
+/**
+ * Delete a profile picture by its storage path.
+ * Example path: profiles/{userId}/{filename.ext}
+ */
+export async function deleteProfilePicture(path: string): Promise<void> {
+  return deleteImage(path);
+}

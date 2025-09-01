@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import SupabaseConfigScript from "@/components/supabase-config";
 import { SimpleAuthProvider } from "@/contexts/simple-auth-context";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: 'Galatea.AI - Your AI Wingman',
@@ -31,6 +32,7 @@ html {
       <body>
         <SimpleAuthProvider>
           {children}
+          <Toaster />
         </SimpleAuthProvider>
       </body>
     </html>
