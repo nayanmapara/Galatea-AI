@@ -73,3 +73,52 @@ export async function deleteProfilePicture(storagePathOrPublicUrl: string): Prom
   const bucketPath = normalizeToBucketPath(storagePathOrPublicUrl);
   await deleteImage(bucketPath);
 }
+
+// ---- Compatibility exports for profile pictures ----
+
+/**
+ * Upload a user's profile picture to Supabase Storage and return the public URL.
+ * Stores under: images/profiles/{userId}/random.ext
+ */
+export async function uploadProfilePicture(userId: string, file: File): Promise<string> {
+  const supabase = createClient();
+  
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `profiles/${userId}/${fileName}`;
+
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file);
+
+  if (error) {
+    throw new Error(`Failed to upload profile picture: ${error.message}`);
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(filePath);
+
+  return publicUrl;
+}
+
+/**
+ * Delete a profile picture by its storage path or URL.
+ */
+export async function deleteProfilePicture(path: string): Promise<void> {
+  const supabase = createClient();
+  
+  // Extract path from URL if needed
+  let filePath = path;
+  if (path.includes('/storage/v1/object/public/avatars/')) {
+    filePath = path.split('/storage/v1/object/public/avatars/')[1];
+  }
+  
+  const { error } = await supabase.storage
+    .from('avatars')
+    .remove([filePath]);
+
+  if (error) {
+    throw new Error(`Failed to delete profile picture: ${error.message}`);
+  }
+}
