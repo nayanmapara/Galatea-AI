@@ -2,53 +2,15 @@
 
 import { Suspense, useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 
 function SignInContent() {
-  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
-  const handleEmailSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setError(error.message);
-        setIsLoading(false);
-        return;
-      }
-      setSuccessMessage("Check your email to confirm your account.");
-      setIsLoading(false);
-    } catch (e: any) {
-      setError(e?.message || "Failed to sign up with email");
-      setIsLoading(false);
-    }
-  }
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleEmailSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setError(error.message);
-        setIsLoading(false);
-        return;
-      }
-      window.location.href = "/dashboard";
-    } catch (e: any) {
-      setError(e?.message || "Failed to sign in with email");
-      setIsLoading(false);
-    }
-  } 
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
@@ -68,7 +30,6 @@ function SignInContent() {
     
     try {
       const supabase = createClient()
-
       const redirectTo = `${window.location.origin}/auth/callback`
 
       const { error } = await supabase.auth.signInWithOAuth({
@@ -83,14 +44,31 @@ function SignInContent() {
         console.error("Discord OAuth error:", error)
         throw error
       }
-
-      // The user will be redirected to Discord, then back to the callback
-      // The callback will handle the session exchange and redirect to dashboard
-      console.log("Redirecting to Discord OAuth...")
-      
     } catch (e: any) {
       console.error("Login error:", e)
       setError(e?.message || "Failed to sign in with Discord")
+      setIsLoading(false)
+    }
+  }
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+    
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      
+      if (error) {
+        setError(error.message)
+        setIsLoading(false)
+        return
+      }
+      
+      window.location.href = "/dashboard"
+    } catch (e: any) {
+      setError(e?.message || "Failed to sign in with email")
       setIsLoading(false)
     }
   }
@@ -109,9 +87,9 @@ function SignInContent() {
               className="mx-auto filter brightness-0 invert mb-4"
             />
             <h1 className="text-3xl font-bold">
-              Welcome to <span className="text-teal-400">Galatea.AI</span>
+              Welcome Back to <span className="text-teal-400">Galatea.AI</span>
             </h1>
-            <p className="text-gray-400 mt-2">Sign in or create your account</p>
+            <p className="text-gray-400 mt-2">Sign in to your account</p>
           </div>
 
           {error && (
@@ -144,62 +122,49 @@ function SignInContent() {
               )}
             </Button>
 
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-800" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-black px-2 text-gray-500">Or continue with</span>
+              </div>
+            </div>
 
-            {mode === 'sign-in' ? (
-              <form onSubmit={handleEmailSignIn} className="space-y-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="Email"
-                  required
-                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
-                />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
-                />
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-teal-500 hover:bg-teal-400 text-black font-medium py-3 rounded-md transition-colors duration-200"
-                >
-                  {isLoading ? "Signing in..." : "Sign In with Email"}
-                </Button>
-                <p className="text-xs text-gray-400 pt-2">Don't have an account? <button type="button" className="text-teal-400 underline" onClick={() => { setMode('sign-up'); setError(""); setSuccessMessage(""); }}>Sign up</button></p>
-              </form>
-            ) : (
-              <form onSubmit={handleEmailSignUp} className="space-y-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="Email"
-                  required
-                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
-                />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
-                />
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-teal-500 hover:bg-teal-400 text-black font-medium py-3 rounded-md transition-colors duration-200"
-                >
-                  {isLoading ? "Signing up..." : "Sign Up with Email"}
-                </Button>
-                <p className="text-xs text-gray-400 pt-2">Already have an account? <button type="button" className="text-teal-400 underline" onClick={() => { setMode('sign-in'); setError(""); setSuccessMessage(""); }}>Sign in</button></p>
-              </form>
-            )}
+            <form onSubmit={handleEmailSignIn} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500 focus:outline-none"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500 focus:outline-none"
+              />
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-teal-500 hover:bg-teal-400 text-black font-medium py-3 rounded-md transition-colors duration-200"
+              >
+                {isLoading ? "Signing in..." : "Sign In with Email"}
+              </Button>
+            </form>
+
+            <div className="text-center">
+              <p className="text-gray-400">
+                Don't have an account?{" "}
+                <Link href="/sign-up" className="text-teal-400 hover:text-teal-300 underline">
+                  Sign up
+                </Link>
+              </p>
+            </div>
 
             <p className="text-center text-xs text-gray-500">
               By continuing, you agree to our Terms of Service and Privacy Policy. Powered by Supabase authentication.

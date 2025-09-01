@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Logo } from "@/components/logo"
 import { Menu, X, LogOut, User, Settings } from "lucide-react"
 import { useAuth } from "@/contexts/simple-auth-context"
@@ -13,6 +14,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { currentUser, logout } = useAuth()
+  const pathname = usePathname()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -35,6 +37,9 @@ export function Navbar() {
       console.error("Failed to log out:", error)
     }
   }
+
+  // Check if we're on an authentication page
+  const isAuthPage = pathname === "/sign-in" || pathname === "/sign-up"
 
   return (
     <header
@@ -67,7 +72,7 @@ export function Navbar() {
           {!mounted ? (
             // Show loading state during hydration
             <div className="w-24 h-8 bg-gray-700 rounded animate-pulse"></div>
-          ) : currentUser ? (
+          ) : currentUser && !isAuthPage ? (
             <>
               {/* Profile Section - Clickable */}
               <Link
@@ -111,16 +116,15 @@ export function Navbar() {
                 <LogOut size={18} />
               </Button>
             </>
-          ) : (
-            pathname === "/auth" ? (
+          ) : !currentUser && !isAuthPage ? (
+            <>
               <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+                <Link href="/sign-in">Sign In</Link>
+              </Button>
+              <Button variant="outline" className="border-teal-500 text-teal-400 hover:bg-teal-500/10" asChild>
                 <Link href="/sign-up">Sign Up</Link>
               </Button>
-            ) : (
-              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link href="/auth">Login</Link>
-              </Button>
-            )
+            </>
           )}
         </div>
         {/* Mobile Menu Button */}
@@ -200,7 +204,7 @@ export function Navbar() {
                     Log Out
                   </Button>
                 </>
-              ) : (
+              ) : !isAuthPage ? (
                 <Button
                   className="bg-teal-500 text-black hover:bg-teal-400"
                   asChild
@@ -208,7 +212,7 @@ export function Navbar() {
                 >
                   <Link href="/sign-in">Login</Link>
                 </Button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
