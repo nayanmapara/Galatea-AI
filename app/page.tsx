@@ -222,7 +222,7 @@ export default function Home() {
               Ready to <span className="text-teal-400">Make Friends</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Join thousands who've already boosted their social confidence and built meaningful friendships.
+              Join users who've already boosted their social confidence and built meaningful friendships with AI companions.
             </p>
             <Button
               size="lg"

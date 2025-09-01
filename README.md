@@ -1,6 +1,6 @@
 # Galatea AI - AI Companion Dating App
 
-A Next.js application that connects users with AI companions through a modern dating app interface. Built with Supabase for backend services and OpenAI for intelligent companion interactions.
+A Next.js application that connects users with AI companions through a modern dating app interface. Built with Supabase for backend services and OpenAI for intelligent companion interactions. Deployed on Bolt Cloud.
 
 ## ✨ Features
 
@@ -150,8 +150,8 @@ npm run supabase:deploy
 ```
 
 ### Platform Options
-- **Recommended**: Vercel (zero-config Next.js deployment)
-- **Alternative**: Netlify, Railway, or any Node.js hosting
+- **Current**: Bolt Cloud (deployed)
+- **Alternative**: Vercel, Netlify, Railway, or any Node.js hosting
 
 See [Deployment Guide](DEPLOYMENT_GUIDE.md) for detailed instructions.
 

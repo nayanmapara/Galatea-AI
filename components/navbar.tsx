@@ -178,6 +178,9 @@ export function Navbar() {
                         currentUser.email?.split("@")[0]}
                     </span>
                   </div>
+                  <div className="text-xs text-gray-500 px-2">
+                    Secured by Supabase
+                  </div>
                   <Button
                     variant="ghost"
                     onClick={() => {
