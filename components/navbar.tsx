@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
-import { usePathname } from "next/navigation"
 import { Logo } from "@/components/logo"
 import { Menu, X, LogOut, User, Settings } from "lucide-react"
 import { useAuth } from "@/contexts/simple-auth-context"
@@ -14,7 +13,6 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { currentUser, logout } = useAuth()
-  const pathname = usePathname()
   const pathname = usePathname()
 
   useEffect(() => {
