@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { usePathname } from "next/navigation"
 import { Logo } from "@/components/logo"
 import { Menu, X, LogOut, User, Settings } from "lucide-react"
 import { useAuth } from "@/contexts/simple-auth-context"
@@ -12,6 +13,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { currentUser, logout } = useAuth()
+  const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
@@ -61,6 +63,7 @@ export function Navbar() {
           )}
         </div>
 
+        const pathname = usePathname();
         <div className="hidden md:flex space-x-4 items-center">
           {!mounted ? (
             // Show loading state during hydration
@@ -110,12 +113,17 @@ export function Navbar() {
               </Button>
             </>
           ) : (
-            <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-              <Link href="/sign-in">Login</Link>
-            </Button>
+            pathname === "/auth" ? (
+              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+                <Link href="/sign-up">Sign Up</Link>
+              </Button>
+            ) : (
+              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+                <Link href="/auth">Login</Link>
+              </Button>
+            )
           )}
         </div>
-
         {/* Mobile Menu Button */}
         <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

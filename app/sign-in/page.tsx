@@ -8,6 +8,47 @@ import { Button } from "@/components/ui/button"
 import { createSimpleClient as createClient } from "@/lib/supabase/simple-client"
 
 function SignInContent() {
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+  const handleEmailSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        setError(error.message);
+        setIsLoading(false);
+        return;
+      }
+      setSuccessMessage("Check your email to confirm your account.");
+      setIsLoading(false);
+    } catch (e: any) {
+      setError(e?.message || "Failed to sign up with email");
+      setIsLoading(false);
+    }
+  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(error.message);
+        setIsLoading(false);
+        return;
+      }
+      window.location.href = "/dashboard";
+    } catch (e: any) {
+      setError(e?.message || "Failed to sign in with email");
+      setIsLoading(false);
+    }
+  } 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
@@ -102,6 +143,63 @@ function SignInContent() {
                 </>
               )}
             </Button>
+
+
+            {mode === 'sign-in' ? (
+              <form onSubmit={handleEmailSignIn} className="space-y-4">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-teal-500 hover:bg-teal-400 text-black font-medium py-3 rounded-md transition-colors duration-200"
+                >
+                  {isLoading ? "Signing in..." : "Sign In with Email"}
+                </Button>
+                <p className="text-xs text-gray-400 pt-2">Don't have an account? <button type="button" className="text-teal-400 underline" onClick={() => { setMode('sign-up'); setError(""); setSuccessMessage(""); }}>Sign up</button></p>
+              </form>
+            ) : (
+              <form onSubmit={handleEmailSignUp} className="space-y-4">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  className="w-full px-4 py-3 rounded-md bg-gray-900 border border-gray-800 text-white focus:border-teal-500"
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-teal-500 hover:bg-teal-400 text-black font-medium py-3 rounded-md transition-colors duration-200"
+                >
+                  {isLoading ? "Signing up..." : "Sign Up with Email"}
+                </Button>
+                <p className="text-xs text-gray-400 pt-2">Already have an account? <button type="button" className="text-teal-400 underline" onClick={() => { setMode('sign-in'); setError(""); setSuccessMessage(""); }}>Sign in</button></p>
+              </form>
+            )}
 
             <p className="text-center text-xs text-gray-500">
               By continuing, you agree to our Terms of Service and Privacy Policy. Powered by Supabase authentication.
