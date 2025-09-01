@@ -2,43 +2,43 @@
 
 import { useState, useEffect } from "react"
 import { motion, type PanInfo, useMotionValue, useTransform } from "framer-motion"
-import { Heart, X, Star, MessageCircle, ArrowLeft } from "lucide-react"
+import { Heart, X, Star, MessageCircle, ArrowLeft, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SwipeCard } from "@/components/swipe-card"
 import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
-import { getAllCompanionsClient as getAllCompanions, type AICompanion } from "@/lib/companions"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useToast } from "@/components/ui/use-toast"
+import { processSwipe, getRecommendations } from "@/lib/supabase/edge-functions"
 
-export default function SwipePage() {
-  // Redirect to enhanced swipe page
-  const router = useRouter()
-  
-  useEffect(() => {
-    router.replace('/swipe/enhanced')
-  }, [router])
-
-  return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
-          <p className="text-white">Loading...</p>
-        </div>
-      </div>
-    </ProtectedRoute>
-  )
+interface AICompanion {
+  id: string
+  name: string
+  age: number
+  bio: string
+  personality: string
+  interests: string[]
+  personality_traits: string[]
+  communication_style: string
+  learning_capacity?: string
+  backstory?: string
+  favorite_topics: string[]
+  relationship_goals: string[]
+  image_url: string
+  compatibility_score?: number
 }
 
-function SwipePageLegacy() {
+export default function EnhancedSwipePage() {
   const [companions, setCompanions] = useState<AICompanion[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [matches, setMatches] = useState<string[]>([])
   const [rejections, setRejections] = useState<string[]>([])
+  const [isProcessing, setIsProcessing] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-200, 200], [-30, 30])
@@ -55,57 +55,93 @@ function SwipePageLegacy() {
   const loadCompanions = async () => {
     try {
       setIsLoading(true)
-      const fetchedCompanions = await getAllCompanions()
-
+      setError(null)
+      
+      const fetchedCompanions = await getRecommendations(20, [...matches, ...rejections])
+      
       if (fetchedCompanions.length === 0) {
-        // If no companions in database, create some default ones
-        await createDefaultCompanions()
-        const newCompanions = await getAllCompanions()
-        setCompanions(newCompanions)
+        setError("No more companions available. Check back later!")
       } else {
         setCompanions(fetchedCompanions)
       }
     } catch (err) {
-      setError("Failed to load companions")
+      setError("Failed to load companions. Please try again.")
       console.error(err)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const createDefaultCompanions = async () => {
-    // This would be called only if no companions exist
-    // You can populate with default data or handle this differently
-    console.log("No companions found in database")
-  }
-
-  const handleSwipe = (direction: "left" | "right" | "up") => {
-    if (currentIndex >= companions.length) return
+  const handleSwipe = async (direction: "left" | "right" | "up") => {
+    if (currentIndex >= companions.length || isProcessing) return
 
     const currentCompanion = companions[currentIndex]
+    setIsProcessing(true)
 
-    if (direction === "right" || direction === "up") {
-      setMatches((prev) => [...prev, currentCompanion.id!])
-    } else {
-      setRejections((prev) => [...prev, currentCompanion.id!])
-    }
+    try {
+      let decision: 'like' | 'pass' | 'super_like'
+      if (direction === "right") {
+        decision = 'like'
+      } else if (direction === "up") {
+        decision = 'super_like'
+      } else {
+        decision = 'pass'
+      }
 
-    // Move to next companion
-    if (currentIndex < companions.length - 1) {
-      setCurrentIndex((prev) => prev + 1)
-    } else {
-      // All companions swiped, show results
-      router.push("/matches")
+      const result = await processSwipe(currentCompanion.id, decision)
+
+      if (result.success) {
+        if (decision === 'like' || decision === 'super_like') {
+          setMatches(prev => [...prev, currentCompanion.id])
+          
+          if (result.isMatch) {
+            toast({
+              title: "🎉 It's a Match!",
+              description: `You matched with ${currentCompanion.name}! Start chatting now.`,
+            })
+          }
+        } else {
+          setRejections(prev => [...prev, currentCompanion.id])
+        }
+
+        // Move to next companion
+        if (currentIndex < companions.length - 1) {
+          setCurrentIndex(prev => prev + 1)
+        } else {
+          // Load more companions or show completion
+          await loadCompanions()
+          setCurrentIndex(0)
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to process swipe",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error("Swipe error:", error)
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsProcessing(false)
     }
   }
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100
 
-    if (info.offset.x > threshold) {
-      handleSwipe("right")
-    } else if (info.offset.x < -threshold) {
-      handleSwipe("left")
+    if (Math.abs(info.offset.x) > threshold) {
+      if (info.offset.x > threshold) {
+        handleSwipe("right")
+      } else {
+        handleSwipe("left")
+      }
+    } else if (info.offset.y < -threshold) {
+      handleSwipe("up")
     }
 
     // Reset card position
@@ -128,12 +164,15 @@ function SwipePageLegacy() {
   if (error) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-500 mb-4">{error}</p>
-            <Button onClick={loadCompanions} className="bg-teal-500 text-black hover:bg-teal-400">
-              Try Again
-            </Button>
+        <div className="min-h-screen bg-black">
+          <Navbar />
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={loadCompanions} className="bg-teal-500 text-black hover:bg-teal-400">
+                Try Again
+              </Button>
+            </div>
           </div>
         </div>
       </ProtectedRoute>
@@ -147,32 +186,15 @@ function SwipePageLegacy() {
           <Navbar />
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
-              <p className="text-white mb-4">No companions available</p>
-              <Button asChild className="bg-teal-500 text-black hover:bg-teal-400">
-                <Link href="/">Return Home</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </ProtectedRoute>
-    )
-  }
-
-  if (currentIndex >= companions.length) {
-    return (
-      <ProtectedRoute>
-        <div className="min-h-screen bg-black">
-          <Navbar />
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">All done!</h2>
+              <Sparkles className="h-16 w-16 text-teal-400 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold text-white mb-4">All caught up!</h2>
               <p className="text-gray-300 mb-8">You've seen all available companions.</p>
               <div className="space-y-4">
                 <Button asChild className="bg-teal-500 text-black hover:bg-teal-400 w-full">
                   <Link href="/matches">View Your Matches ({matches.length})</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
-                  <Link href="/">Return Home</Link>
+                  <Link href="/dashboard">Return to Dashboard</Link>
                 </Button>
               </div>
             </div>
@@ -194,7 +216,7 @@ function SwipePageLegacy() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6 max-w-md mx-auto">
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/">
+              <Link href="/dashboard">
                 <ArrowLeft className="h-6 w-6 text-white" />
               </Link>
             </Button>
@@ -204,7 +226,16 @@ function SwipePageLegacy() {
                 {currentIndex + 1} of {companions.length}
               </p>
             </div>
-            <div className="w-10" /> {/* Spacer */}
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/matches">
+                <Heart className="h-6 w-6 text-teal-400" />
+                {matches.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-teal-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {matches.length}
+                  </span>
+                )}
+              </Link>
+            </Button>
           </div>
 
           {/* Card Stack */}
@@ -279,6 +310,7 @@ function SwipePageLegacy() {
               variant="outline"
               className="rounded-full w-14 h-14 border-red-500 text-red-500 hover:bg-red-500/10 hover:text-red-400"
               onClick={() => handleSwipe("left")}
+              disabled={isProcessing}
             >
               <X className="h-6 w-6" />
             </Button>
@@ -288,6 +320,7 @@ function SwipePageLegacy() {
               variant="outline"
               className="rounded-full w-12 h-12 border-blue-500 text-blue-500 hover:bg-blue-500/10 hover:text-blue-400"
               onClick={() => handleSwipe("up")}
+              disabled={isProcessing}
             >
               <Star className="h-5 w-5" />
             </Button>
@@ -297,6 +330,7 @@ function SwipePageLegacy() {
               variant="outline"
               className="rounded-full w-14 h-14 border-green-500 text-green-500 hover:bg-green-500/10 hover:text-green-400"
               onClick={() => handleSwipe("right")}
+              disabled={isProcessing}
             >
               <Heart className="h-6 w-6" />
             </Button>
@@ -305,10 +339,7 @@ function SwipePageLegacy() {
               size="lg"
               variant="outline"
               className="rounded-full w-12 h-12 border-purple-500 text-purple-500 hover:bg-purple-500/10 hover:text-purple-400"
-              onClick={() => {
-                // Handle message action
-                console.log("Message action")
-              }}
+              onClick={() => router.push('/chats')}
             >
               <MessageCircle className="h-5 w-5" />
             </Button>
@@ -321,6 +352,10 @@ function SwipePageLegacy() {
                 className="bg-teal-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / companions.length) * 100}%` }}
               />
+            </div>
+            <div className="flex justify-between text-xs text-gray-400 mt-2">
+              <span>Matches: {matches.length}</span>
+              <span>Remaining: {companions.length - currentIndex - 1}</span>
             </div>
           </div>
         </main>

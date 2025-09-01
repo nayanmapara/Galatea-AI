@@ -19,12 +19,29 @@ interface SwipeCardProps {
 export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, style }: SwipeCardProps) {
   const [showDetails, setShowDetails] = useState(false)
 
+  // Handle missing or undefined fields gracefully
+  const safeCompanion = {
+    name: companion.name || 'Unknown',
+    age: companion.age || 0,
+    personality: companion.personality || 'Mysterious',
+    interests: companion.interests || [],
+    bio: companion.bio || 'No bio available',
+    imageUrl: companion.imageUrl || companion.image_url || '/placeholder.svg?height=600&width=400',
+    personalityTraits: companion.personalityTraits || companion.personality_traits || [],
+    communicationStyle: companion.communicationStyle || companion.communication_style || '',
+    learningCapacity: companion.learningCapacity || companion.learning_capacity || '',
+    favoriteTopics: companion.favoriteTopics || companion.favorite_topics || [],
+    relationshipGoals: companion.relationshipGoals || companion.relationship_goals || [],
+    backstory: companion.backstory || '',
+    compatibilityScore: companion.compatibilityScore || companion.compatibility_score
+  }
+
   return (
     <div className="w-full h-full bg-gray-900 rounded-2xl overflow-hidden shadow-2xl" style={style}>
       <div className="relative w-full h-full">
         <Image
-          src={companion.imageUrl || "/placeholder.svg?height=600&width=400"}
-          alt={companion.name}
+          src={safeCompanion.imageUrl}
+          alt={safeCompanion.name}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 400px"
@@ -44,21 +61,21 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-3xl font-bold text-white mb-1">
-                {companion.name}
-                {companion.age && <span className="text-teal-400">, {companion.age}</span>}
+                {safeCompanion.name}
+                {safeCompanion.age > 0 && <span className="text-teal-400">, {safeCompanion.age}</span>}
               </h2>
-              <p className="text-gray-300 text-lg">{companion.personality}</p>
+              <p className="text-gray-300 text-lg">{safeCompanion.personality}</p>
             </div>
-            {companion.compatibilityScore && (
+            {safeCompanion.compatibilityScore && (
               <div className="bg-teal-500/20 backdrop-blur-sm rounded-full px-3 py-1 border border-teal-500/30">
-                <span className="text-teal-400 font-bold text-sm">{companion.compatibilityScore}% match</span>
+                <span className="text-teal-400 font-bold text-sm">{safeCompanion.compatibilityScore}% match</span>
               </div>
             )}
           </div>
 
           {/* Interests */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {companion.interests.slice(0, showDetails ? companion.interests.length : 4).map((interest, index) => (
+            {safeCompanion.interests.slice(0, showDetails ? safeCompanion.interests.length : 4).map((interest, index) => (
               <span
                 key={index}
                 className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full border border-white/30"
@@ -66,26 +83,26 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
                 {interest}
               </span>
             ))}
-            {!showDetails && companion.interests.length > 4 && (
+            {!showDetails && safeCompanion.interests.length > 4 && (
               <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full border border-white/30">
-                +{companion.interests.length - 4} more
+                +{safeCompanion.interests.length - 4} more
               </span>
             )}
           </div>
 
           {/* Bio */}
           <p className="text-white mb-4 leading-relaxed">
-            {showDetails ? companion.bio : `${companion.bio.slice(0, 120)}${companion.bio.length > 120 ? "..." : ""}`}
+            {showDetails ? safeCompanion.bio : `${safeCompanion.bio.slice(0, 120)}${safeCompanion.bio.length > 120 ? "..." : ""}`}
           </p>
 
           {/* Detailed information (shown when expanded) */}
           {showDetails && (
             <div className="space-y-4 mt-6">
-              {companion.personalityTraits && companion.personalityTraits.length > 0 && (
+              {safeCompanion.personalityTraits && safeCompanion.personalityTraits.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Personality Traits</h3>
                   <div className="flex flex-wrap gap-2">
-                    {companion.personalityTraits.map((trait, index) => (
+                    {safeCompanion.personalityTraits.map((trait, index) => (
                       <span
                         key={index}
                         className="bg-teal-500/20 text-teal-300 text-sm px-2 py-1 rounded-full border border-teal-500/30"
@@ -97,25 +114,25 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
                 </div>
               )}
 
-              {companion.communicationStyle && (
+              {safeCompanion.communicationStyle && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Communication Style</h3>
-                  <p className="text-gray-300 text-sm">{companion.communicationStyle}</p>
+                  <p className="text-gray-300 text-sm">{safeCompanion.communicationStyle}</p>
                 </div>
               )}
 
-              {companion.learningCapacity && (
+              {safeCompanion.learningCapacity && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Learning Capacity</h3>
-                  <p className="text-gray-300 text-sm">{companion.learningCapacity}</p>
+                  <p className="text-gray-300 text-sm">{safeCompanion.learningCapacity}</p>
                 </div>
               )}
 
-              {companion.favoriteTopics && companion.favoriteTopics.length > 0 && (
+              {safeCompanion.favoriteTopics && safeCompanion.favoriteTopics.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Favorite Topics</h3>
                   <div className="flex flex-wrap gap-2">
-                    {companion.favoriteTopics.map((topic, index) => (
+                    {safeCompanion.favoriteTopics.map((topic, index) => (
                       <span
                         key={index}
                         className="bg-purple-500/20 text-purple-300 text-sm px-2 py-1 rounded-full border border-purple-500/30"
@@ -127,11 +144,11 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
                 </div>
               )}
 
-              {companion.relationshipGoals && companion.relationshipGoals.length > 0 && (
+              {safeCompanion.relationshipGoals && safeCompanion.relationshipGoals.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Relationship Goals</h3>
                   <div className="flex flex-wrap gap-2">
-                    {companion.relationshipGoals.map((goal, index) => (
+                    {safeCompanion.relationshipGoals.map((goal, index) => (
                       <span
                         key={index}
                         className="bg-pink-500/20 text-pink-300 text-sm px-2 py-1 rounded-full border border-pink-500/30"
@@ -143,10 +160,10 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
                 </div>
               )}
 
-              {companion.backstory && (
+              {safeCompanion.backstory && (
                 <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                   <h3 className="text-teal-400 font-semibold mb-2">Backstory</h3>
-                  <p className="text-gray-300 text-sm">{companion.backstory}</p>
+                  <p className="text-gray-300 text-sm">{safeCompanion.backstory}</p>
                 </div>
               )}
             </div>
