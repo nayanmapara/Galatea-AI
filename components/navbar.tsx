@@ -56,14 +56,13 @@ export function Navbar() {
               <Link href="/profile" className="text-gray-300 hover:text-teal-400 transition-colors">
                 Profile
               </Link>
-              <Link href="/start-swiping" className="text-gray-300 hover:text-teal-400 transition-colors">
+              <Link href="/swipe/enhanced" className="text-gray-300 hover:text-teal-400 transition-colors">
                 Discover
               </Link>
             </>
           )}
         </div>
 
-        const pathname = usePathname();
         <div className="hidden md:flex space-x-4 items-center">
           {!mounted ? (
             // Show loading state during hydration
@@ -120,7 +119,7 @@ export function Navbar() {
             ) : (
               <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
                 <Link href="/auth">Login</Link>
-              </Button>
+                  <Link href="/sign-in">Sign In</Link>
             )
           )}
         </div>
@@ -151,7 +150,7 @@ export function Navbar() {
                   Profile
                 </Link>
                 <Link
-                  href="/start-swiping"
+                  href="/swipe/enhanced"
                   className="text-gray-300 hover:text-teal-400 transition-colors py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -211,7 +210,7 @@ export function Navbar() {
                 </Button>
               )}
             </div>
-          </div>
+                  <Link href="/sign-in">Sign In</Link>
         </div>
       )}
     </header>
