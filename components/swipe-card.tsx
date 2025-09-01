@@ -26,7 +26,7 @@ export function SwipeCard({ companion, onSwipeLeft, onSwipeRight, onSuperLike, s
     personality: companion.personality || 'Mysterious',
     interests: companion.interests || [],
     bio: companion.bio || 'No bio available',
-    imageUrl: companion.imageUrl || companion.image_url || '/placeholder.svg?height=600&width=400',
+    imageUrl: companion.imageUrl || companion.image_url || '/images/galatea-1.png',
     personalityTraits: companion.personalityTraits || companion.personality_traits || [],
     communicationStyle: companion.communicationStyle || companion.communication_style || '',
     learningCapacity: companion.learningCapacity || companion.learning_capacity || '',

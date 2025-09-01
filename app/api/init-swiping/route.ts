@@ -14,10 +14,10 @@ export async function GET() {
 
     // Get companions that the user hasn't swiped on yet
     const { data: companions, error } = await supabase
-      .rpc('get_recommended_companions', {
-        p_user_id: user.id,
-        p_limit: 10
-      })
+      .from('companions')
+      .select('*')
+      .eq('is_active', true)
+      .limit(10)
 
     if (error) {
       console.error("Error fetching companions:", error)

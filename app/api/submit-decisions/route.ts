@@ -37,8 +37,14 @@ export async function POST(request: Request) {
             decision: swipeDecision
           })
 
-        if (swipeError && swipeError.code !== '23505') { // Ignore duplicate key errors
+        if (swipeError) {
+          // Check if it's a duplicate swipe
+          if (swipeError.code === '23505') {
+            results.push({ companionId, decision: swipeDecision, success: false, error: 'Already swiped' })
+            continue
+          }
           console.error("Error inserting swipe decision:", swipeError)
+          results.push({ companionId, decision: swipeDecision, success: false, error: swipeError.message })
         } else {
           results.push({ companionId, decision: swipeDecision, success: true })
         }

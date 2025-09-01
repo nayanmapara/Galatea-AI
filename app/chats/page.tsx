@@ -113,7 +113,7 @@ export default function ChatsPage() {
 
       // Add AI response to UI
       const aiMessage: Message = {
-        id: response.messageId,
+        id: response.messageId || `ai-${Date.now()}`,
         content: response.response,
         companion_id: selectedConversation.companion.id,
         created_at: new Date().toISOString(),
@@ -192,7 +192,7 @@ export default function ChatsPage() {
                       <MessageCircle className="h-12 w-12 text-gray-600 mx-auto mb-4" />
                       <p className="text-gray-400">No conversations yet</p>
                       <Button asChild className="mt-4 bg-teal-500 text-black hover:bg-teal-400">
-                        <Link href="/swipe">Start Swiping</Link>
+                        <Link href="/swipe/enhanced">Start Swiping</Link>
                       </Button>
                     </div>
                   ) : (

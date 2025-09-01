@@ -10,7 +10,7 @@ export interface SwipeResult {
 export interface CompanionResponse {
   response: string
   conversationId: string
-  messageId: string
+  messageId?: string
 }
 
 export interface RecommendationRequest {

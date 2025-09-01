@@ -22,6 +22,7 @@ export async function getCompanionsClient(): Promise<Companion[]> {
   const { data, error } = await supabase
     .from('companions')
     .select('*')
+    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   if (error) {
