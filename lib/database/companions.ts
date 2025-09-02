@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/client"
-import { createClient as createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/client"
+import { createClient as createServerClient } from "@/utils/supabase/server"
 
 export interface Companion {
   id: string

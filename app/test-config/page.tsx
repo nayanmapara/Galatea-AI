@@ -27,7 +27,7 @@ export default function TestSupabasePage() {
 
   const testSupabaseClient = async () => {
     try {
-      const { createClient } = await import("@/lib/supabase/client")
+      const { createClient } = await import("@/utils/supabase/client")
       const supabase = createClient()
       alert("Supabase client created successfully!")
       console.log("Supabase client:", supabase)

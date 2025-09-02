@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, MessageCircle, Heart, Sparkles } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 
 interface Match {
   id: string

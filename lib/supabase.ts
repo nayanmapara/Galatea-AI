@@ -1,7 +1,7 @@
 'use client'
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/utils/supabase/client'
 
 // Create a singleton browser client and export it as `supabase`
 let _supabase: SupabaseClient | null = null

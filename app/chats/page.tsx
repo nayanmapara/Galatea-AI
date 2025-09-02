@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { ArrowLeft, MessageCircle, Search, Send } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
-import { getUserConversations, getConversation, generateCompanionResponse } from "@/lib/supabase/edge-functions"
+// Edge functions temporarily disabled - focusing on auth
 import { useToast } from "@/components/ui/use-toast"
 
 interface Message {

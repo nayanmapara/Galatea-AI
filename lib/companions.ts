@@ -1,4 +1,4 @@
-import { createClient as createClientClient } from "@/lib/supabase/client";
+import { createClient as createClientClient } from "@/utils/supabase/client";
 
 export interface Companion {
   id: string;

@@ -10,7 +10,7 @@ import { ProtectedRoute } from "@/components/protected-route"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
-import { processSwipe, getRecommendations } from "@/lib/supabase/edge-functions"
+// Edge functions temporarily disabled - focusing on auth
 
 interface AICompanion {
   id: string
