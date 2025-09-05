@@ -12,7 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/contexts/simple-auth-context"
 import { uploadProfilePicture, deleteProfilePicture } from "@/lib/storage"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 import { CheckCircleIcon, UserIcon, Camera, Trash2, Upload } from "lucide-react"
 
 export default function Profile() {

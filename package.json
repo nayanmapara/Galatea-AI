@@ -6,7 +6,18 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "supabase:setup": "bash scripts/setup-local-supabase.sh",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:deploy": "bash scripts/deploy-supabase.sh",
+    "supabase:populate": "bash scripts/populate-companions.sh",
+    "supabase:migrations": "supabase db push",
+    "supabase:functions:deploy": "supabase functions deploy --no-verify-jwt",
+    "supabase:logs": "supabase logs",
+    "db:generate-types": "supabase gen types typescript --local > lib/database.types.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",

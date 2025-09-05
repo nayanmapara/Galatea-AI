@@ -1,4 +1,4 @@
-import { createClient as createClientClient } from "@/lib/supabase/client";
+import { createClient as createClientClient } from "@/utils/supabase/client";
 
 export interface Companion {
   id: string;
@@ -22,6 +22,7 @@ export async function getCompanionsClient(): Promise<Companion[]> {
   const { data, error } = await supabase
     .from('companions')
     .select('*')
+    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -78,3 +79,6 @@ export async function deleteCompanionClient(id: string): Promise<void> {
 }
 
 export const getAllCompanionsClient = getCompanionsClient;
+
+// ---- Compatibility export for companion fetch ----
+export const getAllCompanions = getCompanionsClient;
