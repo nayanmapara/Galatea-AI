@@ -72,7 +72,7 @@ export default function Home() {
         <section className="relative h-screen flex items-center">
           <div className="absolute inset-0 z-0">
             <Image
-              src="/hero.png"
+              src="hero.png"
               alt="AI Companion"
               fill
               style={{ objectFit: "cover", objectPosition: "center" }}
@@ -153,24 +153,23 @@ export default function Home() {
         <section className="py-24 bg-gray-950">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
-              Meet Your <span className="text-teal-400">Confidence Coaches</span>
+              Why the Others are <span className="text-teal-400">Broken</span>
             </h2>
-
             <div className="grid md:grid-cols-3 gap-8">
-              <CompanionCard
-                image="/images/galatea-2.png"
-                name="Athena"
-                description="Your intellectual conversation partner. Perfect for practicing deep discussions and building thoughtful communication skills."
+              <CompetitorCard
+                image="chai.png"
+                name="Character AI / Chai/ Pygmalion AI"
+                description="More focused on roleplay and short-term fantasies than on building long-term skills, it's a world built for escape, not for growth."
               />
-              <CompanionCard
-                image="/images/galatea-1.png"
-                name="Mekkana"
-                description="The social butterfly who helps you master casual conversations and break the ice with confidence."
-              />
-              <CompanionCard
-                image="/images/galatea-3.png"
-                name="Iris"
-                description="Your empathetic listener who helps you navigate emotions and build authentic connections."
+              <CompetitorCard
+                image="replika.png"
+                name="Replika"
+                description="Replika is an emotional companion designed to be a non-judgmental friend, but it often falls short with its limited functionality beyond chat and a tendency to repeat itself."
+                />
+              <CompetitorCard
+                image="dreamgf.png"
+                name="Dream GF"
+                description="Dream GF's biggest shortcoming is its focus on creating an idealized, transactional relationship, which can isolate users from the complexities and mutual effort required for real human connection."
               />
             </div>
           </div>
@@ -186,11 +185,11 @@ export default function Home() {
               <div>
                 <ol className="space-y-8">
                   {[
-                    "Sign up and choose your confidence coach",
-                    "Practice conversations in different scenarios",
-                    "Get personalized feedback and tips",
-                    "Build confidence through regular practice",
-                    "Apply your new skills to real-world connections",
+                    "Sign up and swipe for your perfect companion",
+                    "The AI have a posibility of reject you",
+                    "If the AI accept you, you can start chatting with them",
+                    "If the AI reject you, you can swipe again",
+                    "Experiance love for what it is the risk of rejection, the beauty of accepting yourself",
                   ].map((step, index) => (
                     <li key={index} className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-teal-500 text-black flex items-center justify-center font-bold">
@@ -203,8 +202,8 @@ export default function Home() {
               </div>
               <div className="relative h-[600px] rounded-lg overflow-hidden">
                 <Image
-                  src="/images/galatea-3.png"
-                  alt="AI Confidence Coach"
+                  src="https://placehold.co/600x900/000000/FFFFFF?text=How+It+Works+Image"
+                  alt="placeholder"
                   fill
                   style={{ objectFit: "cover" }}
                   className="rounded-lg"
@@ -242,7 +241,7 @@ export default function Home() {
             <div>
               <Link href="/" className="flex items-center space-x-2 mb-4">
                 <Image
-                  src="/favicon.png"
+                  src="https://placehold.co/30x30/000000/FFFFFF?text=Logo"
                   alt="Galatea.AI Logo"
                   width={30}
                   height={30}
@@ -333,13 +332,31 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
     </div>
   )
 }
-
+function CompetitorCard({ image, name, description }: { image: string; name: string; description: string }) {
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:border-teal-500/30 group">
+      <div className="relative h-80">
+        <Image
+          src={image}
+          alt={name}
+          fill
+          style={{ objectFit: "cover", objectPosition: "top" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+      </div>
+      <div className="p-6">
+        <h3 className="text-2xl font-semibold text-white mb-2">{name}</h3>
+        <p className="text-gray-300">{description}</p>
+      </div>
+    </div>
+  )
+}
 function CompanionCard({ image, name, description }: { image: string; name: string; description: string }) {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:border-teal-500/30 group">
       <div className="relative h-80">
         <Image
-          src={image || "/placeholder.svg"}
+          src={image}
           alt={name}
           fill
           style={{ objectFit: "cover", objectPosition: "top" }}
