@@ -191,18 +191,14 @@ export function Navbar() {
                 <Button
                   className="bg-teal-500 text-black hover:bg-teal-400"
                   asChild
+                >
+                  <Link href="/sign-in">Sign In</Link>
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </div>
       )}
-      </nav>
-
-      <MobileNavigation 
-        currentUser={currentUser}
-        handleLogout={handleLogout}
-        mounted={mounted}
-        isAuthPage={isAuthPage}
-        isScrolled={isScrolled}
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
     </header>
   )
 }
