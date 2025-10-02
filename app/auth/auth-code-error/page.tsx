@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { AlertTriangle, Home, RefreshCw, Info } from "lucide-react"
+import { TriangleAlert as AlertTriangle, Chrome as Home, RefreshCw, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
