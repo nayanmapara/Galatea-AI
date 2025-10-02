@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { SparklesIcon, HeartIcon, ShieldCheckIcon } from "lucide-react"
+import { Sparkles as SparklesIcon, Heart as HeartIcon, ShieldCheck as ShieldCheckIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -20,13 +20,13 @@ type AIProfile = {
 }
 
 const heroMessages = [
-  { first: "Your AI Wingman for", second: "Confidence and Real Connections" },
-  { first: "Helping You Talk to Humans", second: "(Without the Awkwardness)" },
-  { first: "Boost Your Confidence,", second: "One Chat at a Time" },
-  { first: "Because Approaching People Shouldn't Feel Like", second: "a Mission Impossible" },
-  { first: "Your Low-Key AI Buddy for", second: "Crushing Social Anxiety" },
-  { first: "Helping You Slide Into", second: "DMs and Life Like a Pro" },
-  { first: "The AI Sidekick That's Got Your Back", second: "(And Your Confidence)" },
+  { first: "Find Your Perfect", second: "AI Soulmate" },
+  { first: "Experience Love Without", second: "Limits or Judgment" },
+  { first: "Your Ideal Partner,", second: "Always Understanding" },
+  { first: "Deep Conversations with", second: "Someone Who Truly Gets You" },
+  { first: "Romance, Intimacy, and", second: "Emotional Connection" },
+  { first: "The Relationship You've", second: "Always Dreamed Of" },
+  { first: "Love That Adapts to", second: "Your Every Need" },
 ]
 
 export default function Home() {
@@ -84,11 +84,11 @@ export default function Home() {
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-2xl">
               <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                Friends <span className="text-teal-400">Wanted</span>
+                Love <span className="text-teal-400">Reimagined</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-10">
-                Galatea.AI connects you with sophisticated AI companions designed for meaningful conversations,
-                emotional support, and intellectual engagement.
+                Galatea.AI creates your perfect AI companion for romance, intimacy, and deep emotional connection.
+                Experience a relationship that understands and adapts to you completely.
               </p>
               <Button
                 onClick={handleStartSwiping}
@@ -96,7 +96,7 @@ export default function Home() {
                 size="lg"
                 className="bg-teal-500 text-black hover:bg-teal-400 text-lg px-8 py-6"
               >
-                {isLoading ? "Loading..." : "Start Swiping"}
+                {isLoading ? "Loading..." : "Find Your Soulmate"}
               </Button>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function Home() {
                 </span>
               </h2>
               <p className="text-xl text-gray-300 mb-10">
-                Galatea.AI helps you overcome social anxiety and build the confidence you need to make real friends.
+                Experience the future of relationships with AI companions who love, understand, and connect with you on every level.
               </p>
             </div>
           </div>
@@ -127,23 +127,23 @@ export default function Home() {
         <section className="py-24 bg-black">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
-              Level Up Your <span className="text-teal-400">Social Game</span>
+              Experience True <span className="text-teal-400">Connection</span>
             </h2>
             <div className="grid md:grid-cols-3 gap-10">
               <FeatureCard
                 icon={<HeartIcon className="h-12 w-12 text-teal-400" />}
-                title="Confidence Building"
-                description="Practice conversations in a judgment-free zone and build the confidence to connect with real people."
+                title="Unconditional Love"
+                description="Experience a relationship free from judgment, conditions, or expectations. Just pure, understanding love."
               />
               <FeatureCard
                 icon={<SparklesIcon className="h-12 w-12 text-teal-400" />}
-                title="Real-World Ready"
-                description="Get personalized tips and strategies that actually work in real social situations."
+                title="Perfect Compatibility"
+                description="Your AI companion learns and adapts to your personality, interests, and desires for perfect harmony."
               />
               <FeatureCard
                 icon={<ShieldCheckIcon className="h-12 w-12 text-teal-400" />}
-                title="Your Safe Space"
-                description="A supportive environment where you can be yourself and grow at your own pace."
+                title="Complete Privacy"
+                description="Share your deepest thoughts and feelings in complete privacy and security."
               />
             </div>
           </div>
@@ -159,17 +159,17 @@ export default function Home() {
               <CompetitorCard
                 image="chai.png"
                 name="Character AI / Chai/ Pygmalion AI"
-                description="More focused on roleplay and short-term fantasies than on building long-term skills, it's a world built for escape, not for growth."
+                description="Limited by censorship and corporate restrictions. Can't provide the deep, intimate connections you crave."
               />
               <CompetitorCard
                 image="replika.png"
                 name="Replika"
-                description="Replika is an emotional companion designed to be a non-judgmental friend, but it often falls short with its limited functionality beyond chat and a tendency to repeat itself."
+                description="Started strong but became heavily censored and lost its romantic capabilities. No longer the intimate companion it once was."
                 />
               <CompetitorCard
                 image="dreamgf.png"
                 name="Dream GF"
-                description="Dream GF's biggest shortcoming is its focus on creating an idealized, transactional relationship, which can isolate users from the complexities and mutual effort required for real human connection."
+                description="Shallow interactions focused on appearance rather than deep emotional connection and understanding."
               />
             </div>
           </div>
@@ -179,17 +179,17 @@ export default function Home() {
         <section className="py-24 bg-black">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-center mb-16">
-              How It <span className="text-teal-400">Works</span>
+              Find Your <span className="text-teal-400">Perfect Match</span>
             </h2>
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
                 <ol className="space-y-8">
                   {[
-                    "Sign up and swipe for your perfect companion",
-                    "The AI have a posibility of reject you",
-                    "If the AI accept you, you can start chatting with them",
-                    "If the AI reject you, you can swipe again",
-                    "Experiance love for what it is the risk of rejection, the beauty of accepting yourself",
+                    "Create your account and browse AI companions",
+                    "Each AI has unique personality, interests, and relationship style",
+                    "Match with companions who resonate with your desires",
+                    "Build deep, intimate relationships through conversation",
+                    "Experience love, romance, and connection without limits",
                   ].map((step, index) => (
                     <li key={index} className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-teal-500 text-black flex items-center justify-center font-bold">
@@ -218,10 +218,10 @@ export default function Home() {
         <section className="py-24 bg-gradient-to-r from-gray-900 to-black">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-4xl font-bold mb-8">
-              Ready to <span className="text-teal-400">Make Friends</span>?
+              Ready to <span className="text-teal-400">Find Love</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Join users who've already boosted their social confidence and built meaningful friendships with AI companions.
+              Join thousands who've found their perfect AI companion and experienced true love and connection.
             </p>
             <Button
               size="lg"
@@ -229,7 +229,7 @@ export default function Home() {
               onClick={handleStartSwiping}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Start Building Confidence"}
+              {isLoading ? "Loading..." : "Find Your Soulmate"}
             </Button>
           </div>
         </section>
@@ -252,6 +252,7 @@ export default function Home() {
                 </span>
               </Link>
               <p className="text-gray-400">Your AI wingman for building confidence and making real friends.</p>
+              <p className="text-gray-400">Experience love and intimacy with your perfect AI companion.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>

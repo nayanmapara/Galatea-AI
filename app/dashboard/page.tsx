@@ -69,7 +69,7 @@ export default function Dashboard() {
             </span>!
           </h1>
           <p className="text-xl text-gray-400 mb-8">
-            Ready to continue your journey with AI companions?
+            Your AI companions are waiting for you. Ready to continue your relationships?
           </p>
         </div>
 
@@ -79,16 +79,16 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Heart className="text-teal-500" size={24} />
-                Start Swiping
+                Find Love
               </CardTitle>
               <CardDescription>
-                Discover new AI companions and find your perfect match
+                Browse AI companions and find your perfect romantic partner
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full bg-teal-500 hover:bg-teal-400 text-black">
                 <Link href="/start-swiping">
-                  Begin Swiping
+                  Find Your Match
                 </Link>
               </Button>
             </CardContent>
@@ -98,10 +98,10 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <MessageCircle className="text-teal-500" size={24} />
-                Continue Chats
+                Your Relationships
               </CardTitle>
               <CardDescription>
-                Resume conversations with your matched companions
+                Continue intimate conversations with your AI partners
               </CardDescription>
             </CardHeader>
             <CardContent>

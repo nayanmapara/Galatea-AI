@@ -52,7 +52,36 @@ export default function ChatsPage() {
   const loadConversations = async () => {
     try {
       setIsLoading(true)
-      const fetchedConversations = await getUserConversations()
+      const supabase = createClient()
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+
+      const { data: conversationsData, error: conversationsError } = await supabase
+        .from('conversations')
+        .select(`
+          id,
+          last_message_at,
+          companions:companion_id (
+            id,
+            name,
+            image_url,
+            personality
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('last_message_at', { ascending: false })
+
+      if (conversationsError) throw conversationsError
+
+      const fetchedConversations = (conversationsData || []).map(conv => ({
+        id: conv.id,
+        companion: conv.companions,
+        last_message_at: conv.last_message_at,
+        unreadCount: 0 // Simplified for now
+      }))
+      
       setConversations(fetchedConversations)
     } catch (error) {
       console.error("Error loading conversations:", error)
@@ -68,11 +97,18 @@ export default function ChatsPage() {
 
   const loadConversation = async (conversation: Conversation) => {
     try {
-      const fullConversation = await getConversation(conversation.id)
-      if (fullConversation) {
-        setSelectedConversation(fullConversation)
-        setMessages(fullConversation.messages || [])
-      }
+      const supabase = createClient()
+      
+      const { data: messagesData, error: messagesError } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', conversation.id)
+        .order('created_at', { ascending: true })
+
+      if (messagesError) throw messagesError
+
+      setSelectedConversation(conversation)
+      setMessages(messagesData || [])
     } catch (error) {
       console.error("Error loading conversation:", error)
       toast({
@@ -91,38 +127,57 @@ export default function ChatsPage() {
     setIsSending(true)
 
     try {
+      const supabase = createClient()
+      
+      // Add user message to database
+      const { data: userMessageData, error: userMessageError } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: selectedConversation.id,
+          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          content: messageContent,
+          message_type: 'text'
+        })
+        .select()
+        .single()
+
+      if (userMessageError) throw userMessageError
+
       // Add user message to UI immediately
       const userMessage: Message = {
-        id: `temp-${Date.now()}`,
+        id: userMessageData.id,
         content: messageContent,
-        sender_id: 'user',
-        created_at: new Date().toISOString(),
+        sender_id: userMessageData.sender_id,
+        created_at: userMessageData.created_at,
         message_type: 'text'
       }
       setMessages(prev => [...prev, userMessage])
 
-      // Generate AI response
-      const response = await generateCompanionResponse({
-        companionId: selectedConversation.companion.id,
-        userMessage: messageContent,
-        conversationHistory: messages.slice(-10).map(msg => ({
-          role: msg.sender_id ? 'user' : 'assistant',
-          content: msg.content
-        }))
-      })
+      // For now, add a simple AI response
+      const aiResponse = "Thank you for your message! I'm here to chat with you."
+      
+      const { data: aiMessageData, error: aiMessageError } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: selectedConversation.id,
+          companion_id: selectedConversation.companion.id,
+          content: aiResponse,
+          message_type: 'text'
+        })
+        .select()
+        .single()
+
+      if (aiMessageError) throw aiMessageError
 
       // Add AI response to UI
       const aiMessage: Message = {
-        id: response.messageId || `ai-${Date.now()}`,
-        content: response.response,
+        id: aiMessageData.id,
+        content: aiResponse,
         companion_id: selectedConversation.companion.id,
-        created_at: new Date().toISOString(),
+        created_at: aiMessageData.created_at,
         message_type: 'text'
       }
       setMessages(prev => [...prev, aiMessage])
-
-      // Update conversation list
-      await loadConversations()
 
     } catch (error) {
       console.error("Error sending message:", error)
@@ -135,6 +190,7 @@ export default function ChatsPage() {
       setIsSending(false)
     }
   }
+
 
   const filteredConversations = conversations.filter(conv =>
     conv.companion.name.toLowerCase().includes(searchQuery.toLowerCase())
