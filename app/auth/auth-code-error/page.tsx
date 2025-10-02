@@ -3,26 +3,13 @@ import { AlertTriangle, Home, RefreshCw, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-type SearchParams = {
-  message?: string
-  code?: string
-  next?: string
-}
-
 /**
  * A friendly, actionable Auth error screen.
  * Reads error info from the URL search params and provides quick next steps.
  */
-export default async function AuthCodeErrorPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const params = await searchParams
-  const userMessage = params?.message || "We couldn't complete your sign-in. Please try again."
-
-  const technicalCode = params?.code
-  const next = params?.next && params.next.startsWith("/") ? params.next : "/"
+export default function AuthCodeErrorPage() {
+  const userMessage = "We couldn't complete your sign-in. Please try again."
+  const next = "/"
 
   return (
     <main className="min-h-[100svh] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-black to-black text-white">
