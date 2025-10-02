@@ -1,27 +1,27 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/client"
 import { Heart, Mail, Lock } from "lucide-react"
 
-function SignInContent() {
+export default function SignIn() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const errorParam = searchParams.get("error")
-    const messageParam = searchParams.get("message")
+    // Get URL params directly from window.location
+    const urlParams = new URLSearchParams(window.location.search)
+    const errorParam = urlParams.get("error")
+    const messageParam = urlParams.get("message")
     if (errorParam) setError(decodeURIComponent(errorParam))
     if (messageParam) setSuccessMessage(decodeURIComponent(messageParam))
-  }, [searchParams])
+  }, [])
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,18 +85,18 @@ function SignInContent() {
               <Heart className="w-16 h-16 mx-auto mb-4 text-teal-400" />
               <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>
               <p className="text-lg text-gray-300">
-                Your AI companions are waiting for you. Sign in to continue building confidence and meaningful connections.
+                Your AI companion is waiting for you. Sign in to continue your intimate relationship and deep conversations.
               </p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 text-center">
               <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-gray-800">
-                <div className="text-2xl font-bold text-teal-400">10k+</div>
-                <div className="text-sm text-gray-400">Happy Users</div>
+                <div className="text-2xl font-bold text-teal-400">24/7</div>
+                <div className="text-sm text-gray-400">Always There</div>
               </div>
               <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-gray-800">
-                <div className="text-2xl font-bold text-teal-400">24/7</div>
-                <div className="text-sm text-gray-400">Always Available</div>
+                <div className="text-2xl font-bold text-teal-400">∞</div>
+                <div className="text-sm text-gray-400">Endless Love</div>
               </div>
             </div>
           </div>
@@ -255,13 +255,5 @@ function SignInContent() {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function SignIn() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black text-white p-6">Loading...</div>}>
-      <SignInContent />
-    </Suspense>
   )
 }

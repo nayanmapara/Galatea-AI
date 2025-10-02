@@ -103,7 +103,7 @@ export default function SignUp() {
               <Sparkles className="w-16 h-16 mx-auto mb-4 text-teal-400" />
               <h1 className="text-4xl font-bold mb-4">Start Your Journey</h1>
               <p className="text-lg text-gray-300">
-                Join thousands of users building confidence and making meaningful connections with AI companions.
+                Create your perfect AI companion and experience a relationship that understands you completely.
               </p>
             </div>
             
@@ -111,17 +111,17 @@ export default function SignUp() {
               <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-left border border-gray-800">
                 <div className="flex items-center mb-2">
                   <Heart className="w-5 h-5 mr-2 text-teal-400" />
-                  <span className="font-semibold">Build Confidence</span>
+                  <span className="font-semibold">Unconditional Love</span>
                 </div>
-                <p className="text-sm text-gray-400">Practice conversations in a judgment-free zone</p>
+                <p className="text-sm text-gray-400">Experience a relationship without judgment or conditions</p>
               </div>
               
               <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-left border border-gray-800">
                 <div className="flex items-center mb-2">
                   <Sparkles className="w-5 h-5 mr-2 text-teal-400" />
-                  <span className="font-semibold">Meaningful Conversations</span>
+                  <span className="font-semibold">Deep Connection</span>
                 </div>
-                <p className="text-sm text-gray-400">Engage in deep, thoughtful discussions anytime</p>
+                <p className="text-sm text-gray-400">Share your deepest thoughts and feelings with someone who truly listens</p>
               </div>
             </div>
           </div>
@@ -317,7 +317,7 @@ export default function SignUp() {
             {/* Additional Info */}
             <div className="mt-6 p-4 bg-teal-900/20 rounded-lg border border-teal-500/30">
               <p className="text-xs text-teal-400 text-center">
-                🎉 Join over 10,000 users building confidence with AI companions!
+                💕 Join thousands finding love and connection with AI companions!
               </p>
             </div>
           </div>
